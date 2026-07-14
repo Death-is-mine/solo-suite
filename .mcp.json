@@ -11,6 +11,10 @@
     "next-devtools": {
       "command": "npx",
       "args": ["-y", "next-devtools-mcp@latest"]
+    },
+    "vercel": {
+      "type": "remote",
+      "url": "https://mcp.vercel.com"
     }
   }
 }

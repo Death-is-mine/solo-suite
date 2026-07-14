@@ -2,9 +2,11 @@
 
 import { Search, Bell, Moon, Sun } from 'lucide-react'
 import { useTheme } from './theme-context'
+import { useSession } from 'next-auth/react'
 
 export function Header() {
   const { theme, toggleTheme } = useTheme()
+  const { data: session } = useSession()
 
   return (
     <header className="flex h-14 items-center justify-between border-b border-zinc-200 bg-white px-4 dark:border-zinc-800 dark:bg-zinc-950">
@@ -29,7 +31,7 @@ export function Header() {
         <div className="ml-2 flex items-center gap-2 border-l border-zinc-200 pl-3 dark:border-zinc-700">
           <div className="size-7 rounded-full bg-zinc-200 dark:bg-zinc-700" />
           <div className="text-sm">
-            <p className="font-medium text-zinc-900 dark:text-zinc-50">User</p>
+            <p className="font-medium text-zinc-900 dark:text-zinc-50">{session?.user?.name ?? 'User'}</p>
           </div>
         </div>
       </div>

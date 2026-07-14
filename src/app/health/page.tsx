@@ -10,35 +10,36 @@ interface HealthCheck {
 }
 
 export default function HealthPage() {
+  const [timestamps, setTimestamps] = useState<string[]>([])
+  const [eventCount, setEventCount] = useState(0)
+  const [apiCount, setApiCount] = useState(0)
   const [checks] = useState<HealthCheck[]>([
     { name: 'Application Server', status: 'healthy', message: 'Next.js 16 responding' },
-    { name: 'Database', status: 'healthy', message: 'InMemoryDatabase active' },
-    { name: 'Google Sheets', status: 'degraded', message: 'SHEET_ID not configured — using in-memory' },
-    { name: 'Auth Provider', status: 'degraded', message: 'GOOGLE_CLIENT_ID not configured' },
+    { name: 'Google Sheets', status: 'degraded', message: 'Service account needs sheet access' },
+    { name: 'Auth Provider', status: 'healthy', message: 'Google OAuth configured' },
     { name: 'Event Bus', status: 'healthy', message: 'Pub/sub active' },
     { name: 'Job Queue', status: 'healthy', message: 'In-process queue active' },
     { name: 'Context Engine', status: 'healthy', message: 'Workspace context ready' },
     { name: 'Storage Adapter', status: 'degraded', message: 'Google Drive not configured' },
     { name: 'Calendar Adapter', status: 'degraded', message: 'Google Calendar not configured' },
     { name: 'Mail Adapter', status: 'degraded', message: 'Gmail not configured' },
+    { name: 'Documents Adapter', status: 'degraded', message: 'Google Docs not configured' },
   ])
-  const [timestamps, setTimestamps] = useState<string[]>([])
-  const [eventCount, setEventCount] = useState(0)
 
   useEffect(() => {
+    let mounted = true
+    const endpoints = ['leads', 'clients', 'projects', 'agreements', 'invoices', 'transactions', 'expenses', 'tasks', 'meetings', 'files', 'documents', 'retainers', 'automation', 'reviews', 'settings']
+    Promise.all(endpoints.map((ep) => fetch(`/api/${ep}`).then(r => r.ok).catch(() => false)))
+      .then((results) => { if (mounted) setApiCount(results.filter(Boolean).length) })
     const interval = setInterval(() => {
       setTimestamps((prev) => [...prev.slice(-19), new Date().toLocaleTimeString()])
       setEventCount((prev) => prev + 1)
     }, 3000)
-    return () => clearInterval(interval)
+    return () => { mounted = false; clearInterval(interval) }
   }, [])
-
   const healthy = checks.filter((c) => c.status === 'healthy').length
   const degraded = checks.filter((c) => c.status === 'degraded').length
   const down = checks.filter((c) => c.status === 'down').length
-
-  const totalEndpoints = 15
-  const endpointsOk = 15
 
   return (
     <div className="flex flex-1 flex-col p-6">
@@ -74,7 +75,7 @@ export default function HealthPage() {
             <Database className="size-4" />
             <span className="text-xs font-medium">API Endpoints</span>
           </div>
-          <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{endpointsOk}/{totalEndpoints}</p>
+          <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{apiCount}/15</p>
         </div>
       </div>
 

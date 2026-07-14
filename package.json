@@ -30,8 +30,12 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "mcp-reticle": "^0.1.0-rc.7",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.10"
+  },
+  "allowScripts": {
+    "mcp-reticle@0.1.0-rc.7": true
   }
 }
