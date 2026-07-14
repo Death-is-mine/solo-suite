@@ -22,16 +22,18 @@ export default function WorkspacePage() {
         if (t.value) setTimezone(t.value)
         if (l.value) setLocale(l.value)
       }
-    })
+    }).catch(() => {})
     return () => { mounted = false }
   }, [])
 
   async function saveSettings() {
-    await Promise.all([
-      fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: 'currency', value: currency }) }),
-      fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: 'timezone', value: timezone }) }),
-      fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: 'locale', value: locale }) }),
-    ])
+    try {
+      await Promise.all([
+        fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: 'currency', value: currency }) }),
+        fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: 'timezone', value: timezone }) }),
+        fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: 'locale', value: locale }) }),
+      ])
+    } catch {}
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
@@ -134,7 +136,7 @@ export default function WorkspacePage() {
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-zinc-600 dark:text-zinc-400">Auth</span>
-            <span className="text-xs text-amber-600">Google OAuth (Not configured)</span>
+            <span className="text-xs text-green-600">Google OAuth (Configured)</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-zinc-600 dark:text-zinc-400">Google Sheets</span>

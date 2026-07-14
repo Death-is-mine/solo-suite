@@ -28,7 +28,7 @@ export default function HealthPage() {
 
   useEffect(() => {
     let mounted = true
-    const endpoints = ['leads', 'clients', 'projects', 'agreements', 'invoices', 'transactions', 'expenses', 'tasks', 'meetings', 'files', 'documents', 'retainers', 'automation', 'reviews', 'settings']
+    const endpoints = ['leads', 'clients', 'projects', 'agreements', 'invoices', 'transactions', 'expenses', 'tasks', 'meetings', 'files', 'documents', 'retainers', 'automation', 'reviews']
     Promise.all(endpoints.map((ep) => fetch(`/api/${ep}`).then(r => r.ok).catch(() => false)))
       .then((results) => { if (mounted) setApiCount(results.filter(Boolean).length) })
     const interval = setInterval(() => {

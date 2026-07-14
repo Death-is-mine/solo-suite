@@ -21,7 +21,7 @@ export default function CalendarPage() {
       fetch('/api/tasks').then((r) => r.json()),
     ]).then(([meets, t]) => {
       if (mounted) { setMeetings(meets); setTasks(t); setLoading(false) }
-    })
+    }).catch(() => {})
     return () => { mounted = false }
   }, [])
 

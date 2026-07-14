@@ -24,7 +24,7 @@ export default function ReportsPage() {
       fetch('/api/transactions').then((r) => r.json()),
     ]).then(([l, c, p, i, e, t]) => {
       if (mounted) { setLeads(l); setClients(c); setProjects(p); setInvoices(i); setExpenses(e); setTransactions(t); setLoading(false) }
-    })
+    }).catch(() => {})
     return () => { mounted = false }
   }, [])
 

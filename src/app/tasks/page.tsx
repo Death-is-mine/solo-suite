@@ -23,26 +23,31 @@ export default function TasksPage() {
     fetch('/api/tasks')
       .then((res) => res.json())
       .then((data) => { setTasks(data); setLoading(false) })
+      .catch(() => {})
   }, [])
 
   useEffect(() => { load() }, [load])
 
   async function createTask() {
-    await fetch('/api/tasks', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, projectId, status: 'Backlog', priority: 'Medium' }),
-    })
+    try {
+      await fetch('/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, projectId, status: 'Backlog', priority: 'Medium' }),
+      })
+    } catch {}
     setTitle(''); setProjectId(''); setShowNew(false)
     load()
   }
 
   async function advanceTask(id: string, stage: string) {
-    await fetch('/api/tasks', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, status: stage }),
-    })
+    try {
+      await fetch('/api/tasks', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status: stage }),
+      })
+    } catch {}
     load()
   }
 

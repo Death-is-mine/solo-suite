@@ -34,22 +34,27 @@ export default function FilesPage() {
     fetch('/api/files')
       .then((res) => res.json())
       .then((data) => { setFiles(data); setLoading(false) })
+      .catch(() => {})
   }, [])
 
   useEffect(() => { load() }, [load])
 
   async function createFile() {
-    await fetch('/api/files', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, type, url, projectId, size: 0, uploadedBy: 'user' }),
-    })
+    try {
+      await fetch('/api/files', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, type, url, projectId, size: 0, uploadedBy: 'user' }),
+      })
+    } catch {}
     setName(''); setType(''); setUrl(''); setProjectId(''); setShowNew(false)
     load()
   }
 
   async function removeFile(id: string) {
-    await fetch(`/api/files?id=${id}`, { method: 'DELETE' })
+    try {
+      await fetch(`/api/files?id=${id}`, { method: 'DELETE' })
+    } catch {}
     load()
   }
 

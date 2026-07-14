@@ -20,7 +20,7 @@ export default function PortalPage() {
       fetch('/api/invoices').then((r) => r.json()),
     ]).then(([c, p, a, i]) => {
       if (mounted) { setClients(c); setProjects(p); setAgreements(a); setInvoices(i); setLoading(false) }
-    })
+    }).catch(() => { if (mounted) setLoading(false) })
     return () => { mounted = false }
   }, [])
 

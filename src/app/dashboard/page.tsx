@@ -27,7 +27,7 @@ export default function DashboardPage() {
       fetch('/api/meetings').then((r) => r.json()),
     ]).then(([l, c, p, i, e, t, m]) => {
       if (mounted) { setLeads(l); setClients(c); setProjects(p); setInvoices(i); setExpenses(e); setTasks(t); setMeetings(m); setLoading(false) }
-    })
+    }).catch(() => { if (mounted) setLoading(false) })
     return () => { mounted = false }
   }, [])
 

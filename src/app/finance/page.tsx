@@ -31,7 +31,7 @@ export default function FinancePage() {
       fetch('/api/expenses').then((r) => r.json()),
     ]).then(([inv, tx, ex]) => {
       if (mounted) { setInvoices(inv); setTransactions(tx); setExpenses(ex); setLoading(false) }
-    })
+    }).catch(() => {})
     return () => { mounted = false }
   }, [])
 
@@ -42,39 +42,45 @@ export default function FinancePage() {
   const [currency, setCurrency] = useState('USD')
 
   async function reload() {
-    const [inv, tx, ex] = await Promise.all([
-      fetch('/api/invoices').then((r) => r.json()),
-      fetch('/api/transactions').then((r) => r.json()),
-      fetch('/api/expenses').then((r) => r.json()),
-    ])
-    setInvoices(inv); setTransactions(tx); setExpenses(ex)
+    try {
+      const [inv, tx, ex] = await Promise.all([
+        fetch('/api/invoices').then((r) => r.json()),
+        fetch('/api/transactions').then((r) => r.json()),
+        fetch('/api/expenses').then((r) => r.json()),
+      ])
+      setInvoices(inv); setTransactions(tx); setExpenses(ex)
+    } catch {}
   }
 
   async function createInvoice() {
     const subtotal = parseFloat(amount) || 0
-    await fetch('/api/invoices', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        clientId,
-        lineItems: JSON.stringify([{ description, quantity: 1, rate: subtotal }]),
-        subtotal,
-        tax: 0,
-        taxType: 'None',
-        total: subtotal,
-        currency,
-      }),
-    })
+    try {
+      await fetch('/api/invoices', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId,
+          lineItems: JSON.stringify([{ description, quantity: 1, rate: subtotal }]),
+          subtotal,
+          tax: 0,
+          taxType: 'None',
+          total: subtotal,
+          currency,
+        }),
+      })
+    } catch {}
     setClientId(''); setDescription(''); setAmount(''); setShowNew(false)
     reload()
   }
 
   async function updateStatus(id: string, status: string) {
-    await fetch('/api/invoices', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, status }),
-    })
+    try {
+      await fetch('/api/invoices', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      })
+    } catch {}
     reload()
   }
 

@@ -22,14 +22,16 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   const body = await request.json()
   const { id, ...data } = body
-  const agreement = await db.updateAgreement(id, data)
-
-  if (data.status === 'Sent') {
-    await emit('agreement.sent', { agreementId: id, clientId: agreement.clientId }, 'api/agreements')
+  try {
+    const agreement = await db.updateAgreement(id, data)
+    if (data.status === 'Sent') {
+      await emit('agreement.sent', { agreementId: id, clientId: agreement.clientId }, 'api/agreements')
+    }
+    if (data.status === 'Signed') {
+      await emit('agreement.signed', { agreementId: id, clientId: agreement.clientId }, 'api/agreements')
+    }
+    return NextResponse.json(agreement)
+  } catch {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
-  if (data.status === 'Signed') {
-    await emit('agreement.signed', { agreementId: id, clientId: agreement.clientId }, 'api/agreements')
-  }
-
-  return NextResponse.json(agreement)
 }

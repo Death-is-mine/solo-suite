@@ -26,14 +26,16 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   const body = await request.json()
   const { id, ...data } = body
-  const invoice = await db.updateInvoice(id, data)
-
-  if (data.status === 'Sent') {
-    await emit('invoice.sent', { invoiceId: id, clientId: invoice.clientId }, 'api/invoices')
+  try {
+    const invoice = await db.updateInvoice(id, data)
+    if (data.status === 'Sent') {
+      await emit('invoice.sent', { invoiceId: id, clientId: invoice.clientId }, 'api/invoices')
+    }
+    if (data.status === 'Paid') {
+      await emit('invoice.paid', { invoiceId: id, clientId: invoice.clientId }, 'api/invoices')
+    }
+    return NextResponse.json(invoice)
+  } catch {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
-  if (data.status === 'Paid') {
-    await emit('invoice.paid', { invoiceId: id, clientId: invoice.clientId }, 'api/invoices')
-  }
-
-  return NextResponse.json(invoice)
 }

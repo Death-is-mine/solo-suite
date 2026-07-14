@@ -24,26 +24,31 @@ export default function RetainersPage() {
     fetch('/api/retainers')
       .then((res) => res.json())
       .then((data) => { setRetainers(data); setLoading(false) })
+      .catch(() => {})
   }, [])
 
   useEffect(() => { load() }, [load])
 
   async function createRetainer() {
-    await fetch('/api/retainers', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, clientId, amount: parseFloat(amount) || 0, frequency }),
-    })
+    try {
+      await fetch('/api/retainers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, clientId, amount: parseFloat(amount) || 0, frequency }),
+      })
+    } catch {}
     setName(''); setClientId(''); setAmount(''); setShowNew(false)
     load()
   }
 
   async function updateStatus(id: string, status: string) {
-    await fetch('/api/retainers', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, status }),
-    })
+    try {
+      await fetch('/api/retainers', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      })
+    } catch {}
     load()
   }
 

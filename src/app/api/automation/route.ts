@@ -21,6 +21,10 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   const body = await request.json()
   const { id, ...data } = body
-  const rule = await db.updateAutomationRule(id, data)
-  return NextResponse.json(rule)
+  try {
+    const rule = await db.updateAutomationRule(id, data)
+    return NextResponse.json(rule)
+  } catch {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
 }

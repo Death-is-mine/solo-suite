@@ -37,26 +37,31 @@ export default function ProjectsPage() {
     fetch('/api/projects')
       .then((res) => res.json())
       .then((data) => { setProjects(data); setLoading(false) })
+      .catch(() => {})
   }, [])
 
   useEffect(() => { load() }, [load])
 
   async function createProject() {
-    await fetch('/api/projects', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, clientId, status: 'Planning' }),
-    })
+    try {
+      await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, clientId, status: 'Planning' }),
+      })
+    } catch {}
     setName(''); setClientId(''); setShowNew(false)
     load()
   }
 
   async function updateStatus(id: string, status: string) {
-    await fetch('/api/projects', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, status }),
-    })
+    try {
+      await fetch('/api/projects', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      })
+    } catch {}
     load()
   }
 

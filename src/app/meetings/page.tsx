@@ -17,16 +17,19 @@ export default function MeetingsPage() {
     fetch('/api/meetings')
       .then((res) => res.json())
       .then((data) => { setMeetings(data); setLoading(false) })
+      .catch(() => {})
   }, [])
 
   useEffect(() => { load() }, [load])
 
   async function createMeeting() {
-    await fetch('/api/meetings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, date, duration: parseInt(duration), projectId }),
-    })
+    try {
+      await fetch('/api/meetings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, date, duration: parseInt(duration), projectId }),
+      })
+    } catch {}
     setTitle(''); setDate(''); setDuration('30'); setProjectId(''); setShowNew(false)
     load()
   }

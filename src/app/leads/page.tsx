@@ -18,6 +18,7 @@ export default function LeadsPage() {
     fetch('/api/leads')
       .then((res) => res.json())
       .then((data) => startTransition(() => { setLeads(data); setLoading(false) }))
+      .catch(() => startTransition(() => setLoading(false)))
   }, [])
 
   useEffect(() => { load() }, [load])

@@ -25,6 +25,10 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   const body = await request.json()
   const { id, ...data } = body
-  const meeting = await db.updateMeeting(id, data)
-  return NextResponse.json(meeting)
+  try {
+    const meeting = await db.updateMeeting(id, data)
+    return NextResponse.json(meeting)
+  } catch {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
 }

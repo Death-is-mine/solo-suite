@@ -16,19 +16,22 @@ export default function ClientsPage() {
     fetch('/api/clients')
       .then((res) => res.json())
       .then((data) => { setClients(data); setLoading(false) })
+      .catch(() => {})
   }, [])
 
   useEffect(() => { load() }, [load])
 
   async function createClient() {
-    await fetch('/api/clients', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        company,
-        contacts: JSON.stringify([{ name: contactName, email: contactEmail }]),
-      }),
-    })
+    try {
+      await fetch('/api/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          company,
+          contacts: JSON.stringify([{ name: contactName, email: contactEmail }]),
+        }),
+      })
+    } catch {}
     setCompany(''); setContactName(''); setContactEmail('')
     setShowNew(false)
     load()

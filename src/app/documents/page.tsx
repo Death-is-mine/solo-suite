@@ -16,21 +16,26 @@ export default function DocumentsPage() {
   const [selected, setSelected] = useState<DocumentRecord | null>(null)
   const [editTitle, setEditTitle] = useState('')
   const [editContent, setEditContent] = useState('')
+  const [showNewMenu, setShowNewMenu] = useState(false)
 
   const load = useCallback(() => {
     fetch('/api/documents')
       .then((res) => res.json())
       .then((data) => { setDocs(data); setLoading(false) })
+      .catch(() => {})
   }, [])
 
   useEffect(() => { load() }, [load])
 
   async function createDoc(type: string) {
-    const res = await fetch('/api/documents', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type, projectId: '', title: `New ${type}`, content: '' }),
-    })
+    let res: Response
+    try {
+      res = await fetch('/api/documents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, projectId: '', title: `New ${type}`, content: '' }),
+      })
+    } catch { return }
     const d = await res.json()
     setSelected(d)
     setEditTitle(d.title)
@@ -40,11 +45,13 @@ export default function DocumentsPage() {
 
   async function saveDoc() {
     if (!selected) return
-    await fetch('/api/documents', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: selected.id, title: editTitle, content: editContent }),
-    })
+    try {
+      await fetch('/api/documents', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: selected.id, title: editTitle, content: editContent }),
+      })
+    } catch {}
     load()
   }
 
@@ -57,15 +64,15 @@ export default function DocumentsPage() {
           <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Documents</h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">{docs.length} document{docs.length !== 1 ? 's' : ''}</p>
         </div>
-        <div className="relative group">
-          <button className="flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200">
+        <div className="relative">
+          <button onClick={() => setShowNewMenu((v) => !v)} onBlur={() => setTimeout(() => setShowNewMenu(false), 200)} className="flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200">
             <Plus className="size-4" /> New
           </button>
-          <div className="absolute right-0 top-full z-10 mt-1 hidden w-32 rounded-lg border border-zinc-200 bg-white py-1 shadow-lg group-hover:block dark:border-zinc-700 dark:bg-zinc-900">
-            <button onClick={() => createDoc('Note')} className="w-full px-3 py-1.5 text-left text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800">Note</button>
-            <button onClick={() => createDoc('Doc')} className="w-full px-3 py-1.5 text-left text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800">Document</button>
-            <button onClick={() => createDoc('Template')} className="w-full px-3 py-1.5 text-left text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800">Template</button>
-          </div>
+          {showNewMenu && <div className="absolute right-0 top-full z-10 mt-1 w-32 rounded-lg border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
+            <button onClick={() => { createDoc('Note'); setShowNewMenu(false) }} className="w-full px-3 py-1.5 text-left text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800">Note</button>
+            <button onClick={() => { createDoc('Doc'); setShowNewMenu(false) }} className="w-full px-3 py-1.5 text-left text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800">Document</button>
+            <button onClick={() => { createDoc('Template'); setShowNewMenu(false) }} className="w-full px-3 py-1.5 text-left text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800">Template</button>
+          </div>}
         </div>
       </div>
 

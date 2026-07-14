@@ -23,6 +23,10 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   const body = await request.json()
   const { id, ...data } = body
-  const client = await db.updateClient(id, data)
-  return NextResponse.json(client)
+  try {
+    const client = await db.updateClient(id, data)
+    return NextResponse.json(client)
+  } catch {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
 }

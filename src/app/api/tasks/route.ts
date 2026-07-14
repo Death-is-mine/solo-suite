@@ -25,6 +25,10 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   const body = await request.json()
   const { id, ...data } = body
-  const task = await db.updateTask(id, data)
-  return NextResponse.json(task)
+  try {
+    const task = await db.updateTask(id, data)
+    return NextResponse.json(task)
+  } catch {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
 }

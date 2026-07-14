@@ -12,6 +12,10 @@ export async function GET(req: Request) {
 export async function PUT(req: Request) {
   const { key, value } = await req.json()
   if (!key || value === undefined) return NextResponse.json({ error: 'key and value required' }, { status: 400 })
-  await db.setSetting(key, value)
-  return NextResponse.json({ ok: true })
+  try {
+    await db.setSetting(key, value)
+    return NextResponse.json({ ok: true })
+  } catch {
+    return NextResponse.json({ error: 'Failed to set setting' }, { status: 500 })
+  }
 }

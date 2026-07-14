@@ -21,21 +21,26 @@ export default function AgreementsPage() {
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<AgreementRecord | null>(null)
   const [editContent, setEditContent] = useState('')
+  const [showNewMenu, setShowNewMenu] = useState(false)
 
   const load = useCallback(() => {
     fetch('/api/agreements')
       .then((res) => res.json())
       .then((data) => { setAgreements(data); setLoading(false) })
+      .catch(() => {})
   }, [])
 
   useEffect(() => { load() }, [load])
 
   async function createAgreement(type: string) {
-    const res = await fetch('/api/agreements', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type, clientId: '', content: '' }),
-    })
+    let res: Response
+    try {
+      res = await fetch('/api/agreements', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, clientId: '', content: '' }),
+      })
+    } catch { return }
     const a = await res.json()
     setSelected(a)
     setEditContent(a.content)
@@ -44,20 +49,24 @@ export default function AgreementsPage() {
 
   async function saveContent() {
     if (!selected) return
-    await fetch('/api/agreements', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: selected.id, content: editContent }),
-    })
+    try {
+      await fetch('/api/agreements', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: selected.id, content: editContent }),
+      })
+    } catch {}
     load()
   }
 
   async function updateStatus(id: string, status: string) {
-    await fetch('/api/agreements', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, status }),
-    })
+    try {
+      await fetch('/api/agreements', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      })
+    } catch {}
     load()
   }
 
@@ -72,15 +81,15 @@ export default function AgreementsPage() {
           <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Agreements</h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">{agreements.length} document{agreements.length !== 1 ? 's' : ''}</p>
         </div>
-        <div className="relative group">
-          <button className="flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200">
+        <div className="relative">
+          <button onClick={() => setShowNewMenu((v) => !v)} onBlur={() => setTimeout(() => setShowNewMenu(false), 200)} className="flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200">
             <Plus className="size-4" /> New
           </button>
-          <div className="absolute right-0 top-full z-10 mt-1 hidden w-40 rounded-lg border border-zinc-200 bg-white py-1 shadow-lg group-hover:block dark:border-zinc-700 dark:bg-zinc-900">
+          {showNewMenu && <div className="absolute right-0 top-full z-10 mt-1 w-40 rounded-lg border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
             {types.map((t) => (
-              <button key={t} onClick={() => createAgreement(t)} className="w-full px-3 py-1.5 text-left text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800">{t}</button>
+              <button key={t} onClick={() => { createAgreement(t); setShowNewMenu(false) }} className="w-full px-3 py-1.5 text-left text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800">{t}</button>
             ))}
-          </div>
+          </div>}
         </div>
       </div>
 

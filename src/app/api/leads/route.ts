@@ -20,7 +20,12 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   const body = await request.json()
   const { id, ...data } = body
-  const lead = await db.updateLead(id, data)
+  let lead
+  try {
+    lead = await db.updateLead(id, data)
+  } catch {
+    return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
+  }
 
   if (data.stage === 'Won') {
     const client = await db.createClient({

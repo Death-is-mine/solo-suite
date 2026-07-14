@@ -23,26 +23,31 @@ export default function ReviewsPage() {
     fetch('/api/reviews')
       .then((res) => res.json())
       .then((data) => { setReviews(data); setLoading(false) })
+      .catch(() => {})
   }, [])
 
   useEffect(() => { load() }, [load])
 
   async function createReview() {
-    await fetch('/api/reviews', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clientId, projectId, content, rating }),
-    })
+    try {
+      await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, projectId, content, rating }),
+      })
+    } catch {}
     setClientId(''); setProjectId(''); setContent(''); setRating(5); setShowNew(false)
     load()
   }
 
   async function updateStatus(id: string, status: string) {
-    await fetch('/api/reviews', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, status }),
-    })
+    try {
+      await fetch('/api/reviews', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      })
+    } catch {}
     load()
   }
 

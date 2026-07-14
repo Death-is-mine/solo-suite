@@ -270,26 +270,27 @@ class InMemoryDatabase implements WorkspaceDatabase {
 }
 
 // ponytail: lazy singleton via Proxy — sheets adapter loaded only on first call from server
-let _db: WorkspaceDatabase | null = null
-
-function getOrCreateDb(): WorkspaceDatabase {
-  if (_db) return _db
+// globalThis persists across Turbopack HMR so API routes and server components share one instance
+const _get = (): WorkspaceDatabase => {
+  const key = '__solo_db'
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const g = globalThis as any
+  if (g[key]) return g[key] as WorkspaceDatabase
   const sheetId = process.env.SHEET_ID
   const serviceEmail = process.env.GOOGLE_SERVICE_EMAIL
   const privateKey = process.env.GOOGLE_PRIVATE_KEY
   if (sheetId && serviceEmail && privateKey) {
-    // require is safe here — only called on server, never in client bundle
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { GoogleSheetsAdapter } = require('./sheets')
-    _db = new GoogleSheetsAdapter(serviceEmail, privateKey, sheetId) as WorkspaceDatabase
+    g[key] = new GoogleSheetsAdapter(serviceEmail, privateKey, sheetId) as WorkspaceDatabase
   } else {
-    _db = new InMemoryDatabase()
+    g[key] = new InMemoryDatabase()
   }
-  return _db
+  return g[key] as WorkspaceDatabase
 }
 
 export const db: WorkspaceDatabase = new Proxy({} as WorkspaceDatabase, {
   get(_, prop: string | symbol) {
-    return (getOrCreateDb() as unknown as Record<string | symbol, unknown>)[prop]
+    return (_get() as unknown as Record<string | symbol, unknown>)[prop]
   },
 })
