@@ -89,7 +89,7 @@ export default function LeadsPage() {
           </form>
         )}
 
-        <section className="flex gap-4 overflow-x-auto pb-5" tabIndex={0} tabIndex={0} aria-label="Lead pipeline">
+        <section className="flex gap-4 overflow-x-auto pb-5" tabIndex={0} aria-label="Lead pipeline">
           {stages.map((stage) => {
             const stageLeads = visibleLeads.filter((lead) => lead.stage === stage)
             return <div key={stage} className="flex w-[280px] shrink-0 flex-col rounded-2xl border border-zinc-200/80 bg-zinc-100/60 p-3 dark:border-zinc-800 dark:bg-zinc-900/40">
