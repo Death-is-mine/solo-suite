@@ -55,14 +55,14 @@ export default function DocumentsPage() {
     load()
   }
 
-  if (loading) return <div className="flex flex-1 items-center justify-center text-sm text-zinc-400">Loading...</div>
+  if (loading) return <div className="flex flex-1 items-center justify-center text-sm text-zinc-600">Loading...</div>
 
   return (
     <div className="flex flex-1 flex-col p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Documents</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">{docs.length} document{docs.length !== 1 ? 's' : ''}</p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">{docs.length} document{docs.length !== 1 ? 's' : ''}</p>
         </div>
         <div className="relative">
           <button onClick={() => setShowNewMenu((v) => !v)} onBlur={() => setTimeout(() => setShowNewMenu(false), 200)} className="flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200">
@@ -81,13 +81,13 @@ export default function DocumentsPage() {
           {docs.map((d) => (
             <button key={d.id} onClick={() => { setSelected(d); setEditTitle(d.title); setEditContent(d.content) }} className={`w-full rounded-lg border p-3 text-left transition-colors ${selected?.id === d.id ? 'border-zinc-900 bg-zinc-50 dark:border-zinc-50 dark:bg-zinc-800' : 'border-zinc-200 bg-white hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800'}`}>
               <div className="flex items-center gap-2">
-                <File className="size-4 text-zinc-400" />
+                <File className="size-4 text-zinc-600" />
                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${typeColor[d.type] ?? ''}`}>{d.type}</span>
               </div>
               <p className="mt-1 text-sm font-medium text-zinc-900 dark:text-zinc-50">{d.title}</p>
             </button>
           ))}
-          {docs.length === 0 && <p className="pt-4 text-center text-sm text-zinc-400">No documents yet.</p>}
+          {docs.length === 0 && <p className="pt-4 text-center text-sm text-zinc-600">No documents yet.</p>}
         </div>
 
         {selected && (
@@ -100,7 +100,7 @@ export default function DocumentsPage() {
             <textarea
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
-              className="flex-1 resize-none border-0 bg-transparent p-4 font-mono text-sm text-zinc-900 outline-none placeholder:text-zinc-400 dark:text-zinc-50"
+              className="flex-1 resize-none border-0 bg-transparent p-4 font-mono text-sm text-zinc-900 outline-none placeholder:text-zinc-600 dark:text-zinc-50"
               placeholder="Start writing..."
             />
           </div>
@@ -109,3 +109,4 @@ export default function DocumentsPage() {
     </div>
   )
 }
+

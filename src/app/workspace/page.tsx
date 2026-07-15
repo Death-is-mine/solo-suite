@@ -78,15 +78,15 @@ export default function WorkspacePage() {
                 <Settings className="size-5 text-indigo-500" />
                 <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Localization</h2>
               </div>
-              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Configure your regional preferences</p>
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">Configure your regional preferences</p>
             </div>
             
             <div className="p-6 space-y-6">
               <div>
                 <label className="mb-2 flex items-center gap-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  <DollarSign className="size-4 text-zinc-400" /> Default Currency
+                  <DollarSign className="size-4 text-zinc-600" /> Default Currency
                 </label>
-                <select 
+                <select aria-label="Select option" 
                   value={currency} 
                   onChange={(e) => setCurrency(e.target.value)} 
                   className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:focus:border-indigo-400"
@@ -102,9 +102,9 @@ export default function WorkspacePage() {
               
               <div>
                 <label className="mb-2 flex items-center gap-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  <Clock className="size-4 text-zinc-400" /> Timezone
+                  <Clock className="size-4 text-zinc-600" /> Timezone
                 </label>
-                <select 
+                <select aria-label="Select option" 
                   value={timezone} 
                   onChange={(e) => setTimezone(e.target.value)} 
                   className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:focus:border-indigo-400"
@@ -124,9 +124,9 @@ export default function WorkspacePage() {
               
               <div>
                 <label className="mb-2 flex items-center gap-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  <Globe className="size-4 text-zinc-400" /> Locale
+                  <Globe className="size-4 text-zinc-600" /> Locale
                 </label>
-                <select 
+                <select aria-label="Select option" 
                   value={locale} 
                   onChange={(e) => setLocale(e.target.value)} 
                   className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:focus:border-indigo-400"
@@ -146,7 +146,7 @@ export default function WorkspacePage() {
                   onClick={saveSettings} 
                   leftIcon={saved ? <CheckCircle2 className="size-4" /> : <Save className="size-4" />}
                   variant={saved ? "outline" : "primary"}
-                  className={saved ? "border-emerald-500 text-emerald-600 dark:text-emerald-400" : ""}
+                  className={saved ? "border-emerald-500 text-emerald-700 dark:text-emerald-400" : ""}
                 >
                   {saved ? 'Settings Saved' : 'Save Preferences'}
                 </Button>
@@ -162,13 +162,13 @@ export default function WorkspacePage() {
                 <HardDrive className="size-5 text-indigo-500" />
                 <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Data Management</h2>
               </div>
-              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Export and backup your workspace data</p>
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">Export and backup your workspace data</p>
             </div>
             
             <div className="p-6">
               <div className="mb-6 rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900/50">
                 <h3 className="mb-1 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Full JSON Export</h3>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">
                   Download a complete backup of all your clients, projects, invoices, and settings. 
                   Keep this file safe as it contains sensitive business information.
                 </p>
@@ -190,7 +190,7 @@ export default function WorkspacePage() {
                 <Cpu className="size-5 text-indigo-500" />
                 <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">System Status</h2>
               </div>
-              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Current status of platform services</p>
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">Current status of platform services</p>
             </div>
             
             <div className="p-0">
@@ -230,3 +230,4 @@ export default function WorkspacePage() {
     </div>
   )
 }
+

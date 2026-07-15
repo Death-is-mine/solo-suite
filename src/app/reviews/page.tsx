@@ -51,14 +51,14 @@ export default function ReviewsPage() {
     load()
   }
 
-  if (loading) return <div className="flex flex-1 items-center justify-center text-sm text-zinc-400">Loading...</div>
+  if (loading) return <div className="flex flex-1 items-center justify-center text-sm text-zinc-600">Loading...</div>
 
   return (
     <div className="flex flex-1 flex-col p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Reviews</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">{reviews.length} review{reviews.length !== 1 ? 's' : ''}</p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">{reviews.length} review{reviews.length !== 1 ? 's' : ''}</p>
         </div>
         <button onClick={() => setShowNew(true)} className="flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200">
           <Plus className="size-4" /> Add Review
@@ -81,7 +81,7 @@ export default function ReviewsPage() {
           <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="Review content" className="mb-3 w-full rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50" rows={3} />
           <div className="flex gap-2">
             <button onClick={createReview} className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900">Submit</button>
-            <button onClick={() => setShowNew(false)} className="rounded-md px-3 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400">Cancel</button>
+            <button onClick={() => setShowNew(false)} className="rounded-md px-3 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-600">Cancel</button>
           </div>
         </div>
       )}
@@ -106,11 +106,12 @@ export default function ReviewsPage() {
               )}
             </div>
             <p className="text-sm text-zinc-700 dark:text-zinc-300">{r.content}</p>
-            <p className="mt-1 text-xs text-zinc-400">{r.clientId ? `Client ${r.clientId}` : ''}{r.projectId ? ` · Project ${r.projectId}` : ''}</p>
+            <p className="mt-1 text-xs text-zinc-600">{r.clientId ? `Client ${r.clientId}` : ''}{r.projectId ? ` · Project ${r.projectId}` : ''}</p>
           </div>
         ))}
-        {reviews.length === 0 && <p className="pt-8 text-center text-sm text-zinc-400">No reviews yet.</p>}
+        {reviews.length === 0 && <p className="pt-8 text-center text-sm text-zinc-600">No reviews yet.</p>}
       </div>
     </div>
   )
 }
+

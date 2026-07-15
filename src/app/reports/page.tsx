@@ -140,10 +140,10 @@ export default function ReportsPage() {
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Lead Pipeline</h2>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">Distribution of leads across stages</p>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">Distribution of leads across stages</p>
             </div>
             <div className="rounded-lg bg-zinc-100 p-2 dark:bg-zinc-800">
-              <BarChart3 className="size-5 text-zinc-500 dark:text-zinc-400" />
+              <BarChart3 className="size-5 text-zinc-600 dark:text-zinc-400 dark:text-zinc-600" />
             </div>
           </div>
           
@@ -161,7 +161,7 @@ export default function ReportsPage() {
                 <div key={stage}>
                   <div className="mb-2 flex items-center justify-between text-sm">
                     <span className="font-medium text-zinc-700 dark:text-zinc-300">{stage}</span>
-                    <span className="text-zinc-500">{count} ({pct.toFixed(0)}%)</span>
+                    <span className="text-zinc-600 dark:text-zinc-400">{count} ({pct.toFixed(0)}%)</span>
                   </div>
                   <ProgressBar progress={pct} colorClass={color} />
                 </div>
@@ -174,10 +174,10 @@ export default function ReportsPage() {
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Projects Overview</h2>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">Current status of all projects</p>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">Current status of all projects</p>
             </div>
             <div className="rounded-lg bg-zinc-100 p-2 dark:bg-zinc-800">
-              <PieChart className="size-5 text-zinc-500 dark:text-zinc-400" />
+              <PieChart className="size-5 text-zinc-600 dark:text-zinc-400 dark:text-zinc-600" />
             </div>
           </div>
           
@@ -197,7 +197,7 @@ export default function ReportsPage() {
                 <div key={status}>
                   <div className="mb-2 flex items-center justify-between text-sm">
                     <span className="font-medium text-zinc-700 dark:text-zinc-300">{status}</span>
-                    <span className="text-zinc-500">{count} ({pct.toFixed(0)}%)</span>
+                    <span className="text-zinc-600 dark:text-zinc-400">{count} ({pct.toFixed(0)}%)</span>
                   </div>
                   <ProgressBar progress={pct} colorClass={color} />
                 </div>
@@ -209,3 +209,4 @@ export default function ReportsPage() {
     </div>
   )
 }
+

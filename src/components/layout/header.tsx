@@ -13,25 +13,26 @@ export function Header() {
       <div className="flex items-center gap-3">
         <button 
           onClick={toggleMobileSidebar}
-          className="rounded-md p-2 text-zinc-500 hover:bg-zinc-100 md:hidden dark:text-zinc-400 dark:hover:bg-zinc-800"
+          aria-label="Open mobile menu"
+          className="rounded-md p-2 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 md:hidden dark:text-zinc-400 dark:hover:bg-zinc-800"
         >
           <Menu className="size-4" />
         </button>
-        <button className="group flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50/50 px-3 py-1.5 text-sm text-zinc-400 transition-colors hover:border-zinc-300 hover:bg-white dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:border-zinc-700 dark:hover:bg-zinc-900">
-          <Search className="size-4 text-zinc-400 group-hover:text-zinc-500 dark:group-hover:text-zinc-300" />
+        <button aria-label="Search" className="group flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50/50 px-3 py-1.5 text-sm text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-white dark:border-zinc-700 dark:bg-zinc-900/50 dark:hover:border-zinc-600 dark:text-zinc-400 dark:hover:bg-zinc-900">
+          <Search className="size-4 text-zinc-600 group-hover:text-zinc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300" />
           <span>Search...</span>
-          <kbd className="hidden rounded bg-zinc-200 px-1.5 py-0.5 text-[10px] font-medium text-zinc-500 sm:inline-block dark:bg-zinc-800 dark:text-zinc-400">Ctrl+K</kbd>
+          <kbd className="hidden rounded bg-zinc-200 px-1.5 py-0.5 text-[10px] font-medium text-zinc-600 sm:inline-block dark:bg-zinc-800 dark:text-zinc-400">Ctrl+K</kbd>
         </button>
       </div>
       <div className="flex items-center gap-1.5">
         <button
           onClick={toggleTheme}
-          className="rounded-lg p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+          className="rounded-lg p-2 text-zinc-600 dark:text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
           title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
         >
           {theme === 'light' ? <Moon className="size-4" /> : <Sun className="size-4" />}
         </button>
-        <button className="relative rounded-lg p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50">
+        <button aria-label="View notifications" className="relative rounded-lg p-2 text-zinc-600 dark:text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50">
           <Bell className="size-4" />
           <span className="absolute right-2 top-2 size-2 rounded-full border-2 border-white bg-red-500 dark:border-zinc-950" />
         </button>

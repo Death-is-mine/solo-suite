@@ -46,7 +46,7 @@ export function ProgressBar({
       {(label || showValue) && (
         <div className="mb-1.5 flex items-center justify-between text-xs">
           {label && <span className="font-medium text-zinc-700 dark:text-zinc-300">{label}</span>}
-          {showValue && <span className="text-zinc-500 dark:text-zinc-400">{Math.round(percentage)}%</span>}
+          {showValue && <span className="text-zinc-600 dark:text-zinc-400 dark:text-zinc-400">{Math.round(percentage)}%</span>}
         </div>
       )}
       <div className={`w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800 ${sizes[size]}`}>

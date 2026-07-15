@@ -20,7 +20,7 @@ export function PageHeader({ title, description, eyebrow, children }: PageHeader
           {title}
         </h1>
         {description && (
-          <p className="mt-2 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-400">
             {description}
           </p>
         )}

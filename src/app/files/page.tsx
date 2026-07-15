@@ -58,14 +58,14 @@ export default function FilesPage() {
     load()
   }
 
-  if (loading) return <div className="flex flex-1 items-center justify-center text-sm text-zinc-400">Loading...</div>
+  if (loading) return <div className="flex flex-1 items-center justify-center text-sm text-zinc-600">Loading...</div>
 
   return (
     <div className="flex flex-1 flex-col p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Files</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">{files.length} file{files.length !== 1 ? 's' : ''}</p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">{files.length} file{files.length !== 1 ? 's' : ''}</p>
         </div>
         <button onClick={() => setShowNew(true)} className="flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200">
           <Upload className="size-4" /> Add File
@@ -82,7 +82,7 @@ export default function FilesPage() {
           </div>
           <div className="flex gap-2">
             <button onClick={createFile} className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900">Add</button>
-            <button onClick={() => setShowNew(false)} className="rounded-md px-3 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400">Cancel</button>
+            <button onClick={() => setShowNew(false)} className="rounded-md px-3 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-600">Cancel</button>
           </div>
         </div>
       )}
@@ -90,20 +90,21 @@ export default function FilesPage() {
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         {files.map((f) => (
           <div key={f.id} className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-            <div className={`flex size-10 shrink-0 items-center justify-center rounded-lg text-xs font-medium ${typeIcons[f.type] ?? 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'}`}>
+            <div className={`flex size-10 shrink-0 items-center justify-center rounded-lg text-xs font-medium ${typeIcons[f.type] ?? 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-600'}`}>
               {f.type.toUpperCase()}
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-50">{f.name}</p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">{fileSize(f.size)} · {f.type}</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">{fileSize(f.size)} · {f.type}</p>
             </div>
-            <button onClick={() => removeFile(f.id)} className="rounded-md p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-red-500 dark:hover:bg-zinc-800">
+            <button onClick={() => removeFile(f.id)} className="rounded-md p-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-red-500 dark:hover:bg-zinc-800">
               <Trash2 className="size-4" />
             </button>
           </div>
         ))}
-        {files.length === 0 && <p className="col-span-full pt-8 text-center text-sm text-zinc-400">No files uploaded.</p>}
+        {files.length === 0 && <p className="col-span-full pt-8 text-center text-sm text-zinc-600">No files uploaded.</p>}
       </div>
     </div>
   )
 }
+

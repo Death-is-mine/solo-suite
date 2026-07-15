@@ -52,7 +52,7 @@ export default function RetainersPage() {
     load()
   }
 
-  if (loading) return <div className="flex flex-1 items-center justify-center text-sm text-zinc-400">Loading...</div>
+  if (loading) return <div className="flex flex-1 items-center justify-center text-sm text-zinc-600">Loading...</div>
 
   const totalMonthly = retainers
     .filter((r) => r.status === 'Active')
@@ -66,7 +66,7 @@ export default function RetainersPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Retainers</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">{retainers.filter((r) => r.status === 'Active').length} active · ~${totalMonthly.toFixed(0)}/mo</p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">{retainers.filter((r) => r.status === 'Active').length} active · ~${totalMonthly.toFixed(0)}/mo</p>
         </div>
         <button onClick={() => setShowNew(true)} className="flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200">
           <Plus className="size-4" /> New Retainer
@@ -79,7 +79,7 @@ export default function RetainersPage() {
             <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Retainer name" className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50" />
             <input value={clientId} onChange={(e) => setClientId(e.target.value)} placeholder="Client ID" className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50" />
             <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" placeholder="Amount" className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50" />
-            <select value={frequency} onChange={(e) => setFrequency(e.target.value)} className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50">
+            <select aria-label="Select option" value={frequency} onChange={(e) => setFrequency(e.target.value)} className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50">
               <option value="Weekly">Weekly</option>
               <option value="Monthly">Monthly</option>
               <option value="Quarterly">Quarterly</option>
@@ -88,7 +88,7 @@ export default function RetainersPage() {
           </div>
           <div className="flex gap-2">
             <button onClick={createRetainer} className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900">Create</button>
-            <button onClick={() => setShowNew(false)} className="rounded-md px-3 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400">Cancel</button>
+            <button onClick={() => setShowNew(false)} className="rounded-md px-3 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-600">Cancel</button>
           </div>
         </div>
       )}
@@ -99,7 +99,7 @@ export default function RetainersPage() {
             <div className="mb-3 flex items-start justify-between">
               <div>
                 <h3 className="font-medium text-zinc-900 dark:text-zinc-50">{r.name}</h3>
-                <p className="text-xs text-zinc-500">{r.clientId ? `Client ${r.clientId}` : 'No client'}</p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">{r.clientId ? `Client ${r.clientId}` : 'No client'}</p>
               </div>
               <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${freqColor[r.frequency] ?? ''}`}>{r.frequency}</span>
             </div>
@@ -120,12 +120,13 @@ export default function RetainersPage() {
                   <RotateCcw className="size-3" /> Resume
                 </button>
               )}
-              <span className="ml-auto text-xs text-zinc-400">{r.status}</span>
+              <span className="ml-auto text-xs text-zinc-600">{r.status}</span>
             </div>
           </div>
         ))}
-        {retainers.length === 0 && <p className="col-span-full pt-8 text-center text-sm text-zinc-400">No retainers yet.</p>}
+        {retainers.length === 0 && <p className="col-span-full pt-8 text-center text-sm text-zinc-600">No retainers yet.</p>}
       </div>
     </div>
   )
 }
+

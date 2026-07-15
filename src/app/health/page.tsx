@@ -45,7 +45,7 @@ export default function HealthPage() {
     <div className="flex flex-1 flex-col p-6">
       <div className="mb-6">
         <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Workspace Health</h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">System status and service monitoring</p>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">System status and service monitoring</p>
       </div>
 
       <div className="mb-6 grid gap-4 md:grid-cols-4">
@@ -71,7 +71,7 @@ export default function HealthPage() {
           <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{down}</p>
         </div>
         <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="flex items-center gap-2 text-zinc-500">
+          <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
             <Database className="size-4" />
             <span className="text-xs font-medium">API Endpoints</span>
           </div>
@@ -96,7 +96,7 @@ export default function HealthPage() {
                 )}
                 <div>
                   <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{check.name}</p>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">{check.message}</p>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">{check.message}</p>
                 </div>
               </div>
               <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -113,18 +113,19 @@ export default function HealthPage() {
 
       <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="mb-3 flex items-center gap-2">
-          <Activity className="size-4 text-zinc-400" />
+          <Activity className="size-4 text-zinc-600" />
           <h2 className="text-sm font-medium text-zinc-900 dark:text-zinc-50">Heartbeat</h2>
           <RefreshCw className="size-3 text-zinc-300" />
-          <span className="text-xs text-zinc-400">Every 3s · {eventCount} ticks</span>
+          <span className="text-xs text-zinc-600">Every 3s · {eventCount} ticks</span>
         </div>
         <div className="flex flex-wrap gap-1">
           {timestamps.map((t, i) => (
             <span key={i} className="rounded bg-green-100 px-1.5 py-0.5 text-[10px] text-green-700 dark:bg-green-900/30 dark:text-green-300">{t}</span>
           ))}
-          {timestamps.length === 0 && <span className="text-xs text-zinc-400">Waiting...</span>}
+          {timestamps.length === 0 && <span className="text-xs text-zinc-600">Waiting...</span>}
         </div>
       </div>
     </div>
   )
 }
+

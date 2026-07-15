@@ -103,11 +103,11 @@ export default function DashboardPage() {
           </div>
           <div className="flex gap-4">
             <div className="rounded-xl bg-white/10 p-4 backdrop-blur-md">
-              <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Net Income</p>
+              <p className="text-xs font-medium uppercase tracking-wider text-zinc-600">Net Income</p>
               <p className="mt-1 text-2xl font-semibold">{formatCurrency(netIncome)}</p>
             </div>
             <div className="rounded-xl bg-white/10 p-4 backdrop-blur-md">
-              <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Pending</p>
+              <p className="text-xs font-medium uppercase tracking-wider text-zinc-600">Pending</p>
               <p className="mt-1 text-2xl font-semibold">{formatCurrency(totalPending)}</p>
             </div>
           </div>
@@ -189,8 +189,8 @@ export default function DashboardPage() {
             })}
             {leads.length === 0 && (
               <div className="rounded-xl border border-dashed border-zinc-200 p-8 text-center dark:border-zinc-800">
-                <Target className="mx-auto size-8 text-zinc-400" />
-                <p className="mt-2 text-sm text-zinc-500">No leads in pipeline yet.</p>
+                <Target className="mx-auto size-8 text-zinc-600" />
+                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">No leads in pipeline yet.</p>
               </div>
             )}
           </div>
@@ -206,7 +206,7 @@ export default function DashboardPage() {
                 <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Add Lead</span>
               </Link>
               <Link href="/invoices" className="group flex flex-col items-center gap-2 rounded-xl border border-zinc-200/50 bg-white p-4 transition-all hover:-translate-y-1 hover:border-emerald-200 hover:shadow-md dark:border-zinc-800/50 dark:bg-zinc-900 dark:hover:border-emerald-900/50">
-                <div className="rounded-full bg-emerald-50 p-2 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"><DollarSign className="size-4" /></div>
+                <div className="rounded-full bg-emerald-50 p-2 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"><DollarSign className="size-4" /></div>
                 <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Invoice</span>
               </Link>
               <Link href="/projects" className="group flex flex-col items-center gap-2 rounded-xl border border-zinc-200/50 bg-white p-4 transition-all hover:-translate-y-1 hover:border-amber-200 hover:shadow-md dark:border-zinc-800/50 dark:bg-zinc-900 dark:hover:border-amber-900/50">
@@ -233,12 +233,12 @@ export default function DashboardPage() {
                   <div className={`mt-0.5 size-2 shrink-0 rounded-full ${task.priority === 'High' ? 'bg-rose-500' : task.priority === 'Medium' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
                   <div>
                     <p className="text-sm font-medium text-zinc-900 dark:text-white">{task.title}</p>
-                    {task.dueDate && <p className="mt-1 text-xs text-zinc-500 flex items-center gap-1"><Clock className="size-3"/>{task.dueDate}</p>}
+                    {task.dueDate && <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400 flex items-center gap-1"><Clock className="size-3"/>{task.dueDate}</p>}
                   </div>
                 </div>
               ))}
               {tasks.filter(t => t.status !== 'Done').length === 0 && (
-                <p className="text-sm text-zinc-500 text-center py-4">You&apos;re all caught up!</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 text-center py-4">You&apos;re all caught up!</p>
               )}
             </div>
           </Card>
@@ -247,3 +247,4 @@ export default function DashboardPage() {
     </div>
   )
 }
+

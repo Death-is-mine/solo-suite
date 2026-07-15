@@ -78,7 +78,7 @@ export default function AutomationPage() {
           >
             <div>
               <div className="mb-4 flex items-start justify-between gap-4">
-                <div className={`flex size-10 items-center justify-center rounded-xl ${rule.status === 'Active' ? 'bg-amber-100 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' : 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500'}`}>
+                <div className={`flex size-10 items-center justify-center rounded-xl ${rule.status === 'Active' ? 'bg-amber-100 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-600 dark:text-zinc-400'}`}>
                   <Zap className={`size-5 ${rule.status === 'Active' ? 'fill-current' : ''}`} />
                 </div>
                 <button 
@@ -100,13 +100,13 @@ export default function AutomationPage() {
             <div className="mt-6 rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800/50">
               <div className="flex items-center gap-2">
                 <div className="flex-1">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">When</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">When</p>
                   <p className="mt-0.5 truncate font-mono text-xs font-medium text-indigo-600 dark:text-indigo-400">{rule.trigger}</p>
                 </div>
                 <ArrowRight className="size-4 text-zinc-300 dark:text-zinc-600 shrink-0" />
                 <div className="flex-1">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Then</p>
-                  <p className="mt-0.5 truncate font-mono text-xs font-medium text-emerald-600 dark:text-emerald-400">{rule.action}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">Then</p>
+                  <p className="mt-0.5 truncate font-mono text-xs font-medium text-emerald-700 dark:text-emerald-400">{rule.action}</p>
                 </div>
               </div>
             </div>
@@ -118,7 +118,7 @@ export default function AutomationPage() {
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 bg-transparent py-24 dark:border-zinc-800">
           <Workflow className="mb-4 size-12 text-zinc-300 dark:text-zinc-700" />
           <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">No automations found</h3>
-          <p className="mt-2 max-w-sm text-center text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 max-w-sm text-center text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">
             Automate your repetitive tasks and workflows by creating your first rule.
           </p>
           <Button onClick={() => setShowNew(true)} className="mt-6" leftIcon={<Plus className="size-4" />}>
@@ -144,7 +144,7 @@ export default function AutomationPage() {
           <div className="grid grid-cols-2 gap-4">
             <div className="w-full">
               <label className="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">When this happens...</label>
-              <select 
+              <select aria-label="Select option" 
                 value={trigger} 
                 onChange={(e) => setTrigger(e.target.value)} 
                 className="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:focus:border-indigo-400"
@@ -159,7 +159,7 @@ export default function AutomationPage() {
             </div>
             <div className="w-full">
               <label className="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Then do this...</label>
-              <select 
+              <select aria-label="Select option" 
                 value={action} 
                 onChange={(e) => setAction(e.target.value)} 
                 className="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:focus:border-indigo-400"
@@ -180,3 +180,4 @@ export default function AutomationPage() {
     </div>
   )
 }
+

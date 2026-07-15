@@ -109,7 +109,7 @@ export default function AgreementsPage() {
                   onClick={() => { createAgreement(t); setShowNewMenu(false) }} 
                   className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm text-zinc-700 transition-colors hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800"
                 >
-                  <FilePlus2 className="size-4 text-zinc-400" />
+                  <FilePlus2 className="size-4 text-zinc-600" />
                   {t}
                 </button>
               ))}
@@ -132,18 +132,18 @@ export default function AgreementsPage() {
               }`}
             >
               <div className="flex items-center gap-2.5">
-                <div className={`flex size-8 items-center justify-center rounded-lg ${selected?.id === a.id ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400' : 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500'}`}>
+                <div className={`flex size-8 items-center justify-center rounded-lg ${selected?.id === a.id ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400' : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-600 dark:text-zinc-400'}`}>
                   <FileText className="size-4" />
                 </div>
                 <Badge variant={typeBadgeVariant[a.type] ?? 'neutral'}>{a.type}</Badge>
               </div>
               <div className="mt-3 flex items-center gap-2">
-                <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">v{a.version}</span>
+                <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">v{a.version}</span>
                 <span className="text-zinc-300 dark:text-zinc-700">·</span>
                 <span className={`text-xs font-medium ${
-                  a.status === 'Signed' ? 'text-emerald-600 dark:text-emerald-400' : 
+                  a.status === 'Signed' ? 'text-emerald-700 dark:text-emerald-400' : 
                   a.status === 'Sent' ? 'text-blue-600 dark:text-blue-400' : 
-                  'text-zinc-500 dark:text-zinc-400'
+                  'text-zinc-600 dark:text-zinc-400 dark:text-zinc-600'
                 }`}>
                   {a.status}
                 </span>
@@ -153,8 +153,8 @@ export default function AgreementsPage() {
           {agreements.length === 0 && (
             <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 py-16 dark:border-zinc-800">
               <ScrollText className="mb-3 size-10 text-zinc-300 dark:text-zinc-700" />
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">No documents yet.</p>
-              <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-600">Create your first agreement.</p>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">No documents yet.</p>
+              <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">Create your first agreement.</p>
             </div>
           )}
         </div>
@@ -166,7 +166,7 @@ export default function AgreementsPage() {
               <div className="flex items-center gap-3">
                 <span className="text-sm font-semibold text-zinc-900 dark:text-white">{selected.id}</span>
                 <Badge variant={typeBadgeVariant[selected.type] ?? 'neutral'}>{selected.type}</Badge>
-                <span className="text-xs text-zinc-400 dark:text-zinc-500">v{selected.version}</span>
+                <span className="text-xs text-zinc-600 dark:text-zinc-400">v{selected.version}</span>
               </div>
               <div className="flex items-center gap-2">
                 {selected.status === 'Draft' && (
@@ -183,7 +183,7 @@ export default function AgreementsPage() {
                       size="sm" 
                       onClick={() => updateStatus(selected.id, 'Signed')}
                       leftIcon={<Check className="size-3.5" />}
-                      className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white"
+                      className="bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-700 dark:hover:bg-emerald-800 text-white"
                     >
                       Sign
                     </Button>
@@ -197,7 +197,7 @@ export default function AgreementsPage() {
             <textarea
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
-              className="flex-1 resize-none border-0 bg-transparent p-6 font-mono text-sm leading-relaxed text-zinc-900 outline-none placeholder:text-zinc-400 dark:text-zinc-50"
+              className="flex-1 resize-none border-0 bg-transparent p-6 font-mono text-sm leading-relaxed text-zinc-900 outline-none placeholder:text-zinc-600 dark:text-zinc-50"
               placeholder="Start writing your agreement content here..."
             />
           </div>
@@ -205,7 +205,7 @@ export default function AgreementsPage() {
           <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 bg-transparent dark:border-zinc-800">
             <ScrollText className="mb-4 size-14 text-zinc-200 dark:text-zinc-800" />
             <h3 className="text-lg font-medium text-zinc-700 dark:text-zinc-300">Select a document</h3>
-            <p className="mt-1 text-sm text-zinc-400 dark:text-zinc-600">
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
               Choose a document from the sidebar or create a new one.
             </p>
           </div>
@@ -214,3 +214,4 @@ export default function AgreementsPage() {
     </div>
   )
 }
+

@@ -24,33 +24,33 @@ export default function PortalPage() {
     return () => { mounted = false }
   }, [])
 
-  if (loading) return <div className="flex flex-1 items-center justify-center text-sm text-zinc-400">Loading...</div>
+  if (loading) return <div className="flex flex-1 items-center justify-center text-sm text-zinc-600">Loading...</div>
 
   return (
     <div className="flex flex-1 flex-col p-6">
       <div className="mb-6">
         <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Client Portal</h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">Shared workspace for you and your clients</p>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">Shared workspace for you and your clients</p>
       </div>
 
       <div className="mb-6 grid gap-4 md:grid-cols-3">
         <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
           <div className="flex items-center gap-2">
-            <Briefcase className="size-4 text-zinc-400" />
+            <Briefcase className="size-4 text-zinc-600" />
             <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">Projects</span>
           </div>
           <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{projects.length}</p>
         </div>
         <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
           <div className="flex items-center gap-2">
-            <FileText className="size-4 text-zinc-400" />
+            <FileText className="size-4 text-zinc-600" />
             <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">Agreements</span>
           </div>
           <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{agreements.length}</p>
         </div>
         <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
           <div className="flex items-center gap-2">
-            <Wallet className="size-4 text-zinc-400" />
+            <Wallet className="size-4 text-zinc-600" />
             <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">Invoices</span>
           </div>
           <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{invoices.length}</p>
@@ -64,12 +64,12 @@ export default function PortalPage() {
             <div key={c.id} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
               <div>
                 <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{c.company}</p>
-                <p className="text-xs text-zinc-500">{c.id}</p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">{c.id}</p>
               </div>
-              <ExternalLink className="size-4 text-zinc-400" />
+              <ExternalLink className="size-4 text-zinc-600" />
             </div>
           ))}
-          {clients.length === 0 && <p className="text-sm text-zinc-400">No clients yet.</p>}
+          {clients.length === 0 && <p className="text-sm text-zinc-600">No clients yet.</p>}
         </div>
       </div>
 
@@ -80,10 +80,10 @@ export default function PortalPage() {
             {projects.slice(0, 5).map((p) => (
               <div key={p.id} className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
                 <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{p.name}</p>
-                <p className="text-xs text-zinc-500">{p.status}</p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">{p.status}</p>
               </div>
             ))}
-            {projects.length === 0 && <p className="text-sm text-zinc-400">No projects.</p>}
+            {projects.length === 0 && <p className="text-sm text-zinc-600">No projects.</p>}
           </div>
         </div>
         <div>
@@ -92,13 +92,14 @@ export default function PortalPage() {
             {invoices.filter((i) => i.status === 'Sent' || i.status === 'Partial' || i.status === 'Overdue').slice(0, 5).map((inv) => (
               <div key={inv.id} className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
                 <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{inv.id}</p>
-                <p className="text-xs text-zinc-500">{inv.currency} {inv.total.toFixed(2)} · {inv.status}</p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">{inv.currency} {inv.total.toFixed(2)} · {inv.status}</p>
               </div>
             ))}
-            {invoices.filter((i) => i.status === 'Sent' || i.status === 'Partial').length === 0 && <p className="text-sm text-zinc-400">No open invoices.</p>}
+            {invoices.filter((i) => i.status === 'Sent' || i.status === 'Partial').length === 0 && <p className="text-sm text-zinc-600">No open invoices.</p>}
           </div>
         </div>
       </div>
     </div>
   )
 }
+

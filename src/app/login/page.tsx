@@ -32,7 +32,7 @@ export default async function LoginPage() {
           <h1 className="text-3xl font-bold tracking-tight text-white">
             Solo Suite
           </h1>
-          <p className="mt-2 text-zinc-400">
+          <p className="mt-2 text-zinc-600">
             Your freelance business, all in one place.
           </p>
         </div>
@@ -41,7 +41,7 @@ export default async function LoginPage() {
         <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/20 backdrop-blur-xl">
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-white">Welcome back</h2>
-            <p className="mt-1 text-sm text-zinc-400">
+            <p className="mt-1 text-sm text-zinc-600">
               Sign in to access your workspace
             </p>
           </div>
@@ -67,7 +67,7 @@ export default async function LoginPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-zinc-600 dark:text-zinc-400">
               By signing in, you agree to our Terms of Service and Privacy Policy.
             </p>
           </div>
@@ -81,3 +81,4 @@ export default async function LoginPage() {
     </div>
   )
 }
+

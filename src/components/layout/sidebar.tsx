@@ -60,7 +60,7 @@ export function Sidebar() {
           return (
             <div key={section.title} className={`mb-5 ${idx > 0 ? 'mt-5' : ''}`}>
               {isSidebarOpen ? (
-                <p className="animate-fade-in mb-2 px-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                <p className="animate-fade-in mb-2 px-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
                   {section.title}
                 </p>
               ) : (
@@ -126,7 +126,7 @@ export function Sidebar() {
               <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
                 {session?.user?.name || 'User'}
               </p>
-              <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">Owner</p>
+              <p className="truncate text-xs text-zinc-600 dark:text-zinc-400 dark:text-zinc-400">Owner</p>
             </div>
           </div>
         )}
@@ -134,6 +134,7 @@ export function Sidebar() {
 
       <button 
         onClick={toggleSidebar}
+        aria-label={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
         className="absolute -right-3 top-16 hidden size-6 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-400 shadow-sm transition-colors hover:text-zinc-900 md:flex dark:border-zinc-700 dark:bg-zinc-800 dark:hover:text-zinc-50"
       >
         {isSidebarOpen ? <ChevronLeft className="size-3" /> : <ChevronRight className="size-3" />}
@@ -160,6 +161,7 @@ export function Sidebar() {
         {isMobileSidebarOpen && (
           <button 
             onClick={closeMobileSidebar}
+            aria-label="Close mobile sidebar"
             className="absolute right-4 top-4 rounded-md p-1 text-zinc-400 hover:bg-zinc-100 md:hidden dark:hover:bg-zinc-800"
           >
             <X className="size-5" />

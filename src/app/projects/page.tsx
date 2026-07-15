@@ -106,12 +106,12 @@ export default function ProjectsPage() {
               
               <div className="mt-5">
                 <h3 className="text-lg font-semibold text-zinc-900 dark:text-white line-clamp-1">{p.name}</h3>
-                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">
                   {p.clientId ? `Client: ${p.clientId}` : 'Internal Project'}
                 </p>
               </div>
               
-              <div className="mt-6 flex items-center gap-4 text-xs text-zinc-500 dark:text-zinc-400">
+              <div className="mt-6 flex items-center gap-4 text-xs text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">
                 <div className="flex items-center gap-1.5">
                   <Calendar className="size-3.5" />
                   <span>{p.startDate ?? 'No start date'}</span>
@@ -144,7 +144,7 @@ export default function ProjectsPage() {
                       variant="ghost" 
                       size="sm" 
                       onClick={() => updateStatus(p.id, 'Completed')}
-                      className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400"
+                      className="text-emerald-700 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400"
                       leftIcon={<CheckCircle2 className="size-3.5" />}
                     >
                       Complete
@@ -155,14 +155,14 @@ export default function ProjectsPage() {
                       variant="ghost" 
                       size="sm" 
                       onClick={() => updateStatus(p.id, 'Archived')}
-                      className="text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400"
+                      className="text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-600"
                       leftIcon={<Archive className="size-3.5" />}
                     >
                       Archive
                     </Button>
                   )}
                 </div>
-                <Button variant="ghost" size="icon" className="text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button variant="ghost" size="icon" aria-label="More options" className="text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity">
                   <MoreVertical className="size-4" />
                 </Button>
               </div>
@@ -175,7 +175,7 @@ export default function ProjectsPage() {
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 bg-zinc-50 py-24 dark:border-zinc-800 dark:bg-zinc-900/50">
           <Folder className="mb-4 size-12 text-zinc-300 dark:text-zinc-700" />
           <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">No projects found</h3>
-          <p className="mt-2 max-w-sm text-center text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 max-w-sm text-center text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">
             Get started by creating a new project. You can link it to an existing client or keep it internal.
           </p>
           <Button onClick={() => setShowNew(true)} className="mt-6" leftIcon={<Plus className="size-4" />}>
@@ -213,3 +213,4 @@ export default function ProjectsPage() {
     </div>
   )
 }
+

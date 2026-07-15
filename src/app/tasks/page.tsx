@@ -85,7 +85,7 @@ export default function TasksPage() {
         </Button>
       </PageHeader>
 
-      <div className="flex flex-1 gap-6 overflow-x-auto pb-4 custom-scrollbar">
+      <div className="flex flex-1 gap-6 overflow-x-auto pb-4 custom-scrollbar" tabIndex={0} tabIndex={0}>
         {stages.map((stage, idx) => {
           const stageTasks = tasks.filter((t) => t.status === stage)
           
@@ -94,7 +94,7 @@ export default function TasksPage() {
               <div className="mb-3 flex items-center justify-between px-1">
                 <div className="flex items-center gap-2">
                   <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">{stage}</h3>
-                  <span className="flex size-5 items-center justify-center rounded-full bg-zinc-200/50 text-[10px] font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+                  <span className="flex size-5 items-center justify-center rounded-full bg-zinc-200/50 text-[10px] font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-600">
                     {stageTasks.length}
                   </span>
                 </div>
@@ -117,14 +117,14 @@ export default function TasksPage() {
                           ) : (
                             <GripVertical className="mt-0.5 size-4 shrink-0 text-zinc-300 opacity-0 transition-opacity group-hover:opacity-100 dark:text-zinc-600" />
                           )}
-                          <p className={`text-sm font-medium ${stage === 'Done' ? 'text-zinc-500 line-through dark:text-zinc-400' : 'text-zinc-900 dark:text-zinc-100'}`}>
+                          <p className={`text-sm font-medium ${stage === 'Done' ? 'text-zinc-600 dark:text-zinc-400 line-through dark:text-zinc-600' : 'text-zinc-900 dark:text-zinc-100'}`}>
                             {task.title}
                           </p>
                         </div>
                       </div>
                       
                       {task.description && (
-                        <p className="line-clamp-2 text-xs text-zinc-500 dark:text-zinc-400">
+                        <p className="line-clamp-2 text-xs text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">
                           {task.description}
                         </p>
                       )}
@@ -135,7 +135,7 @@ export default function TasksPage() {
                             {task.priority}
                           </Badge>
                           {task.dueDate && (
-                            <div className="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                            <div className="flex items-center gap-1 text-xs text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">
                               <Calendar className="size-3" />
                               <span>{task.dueDate}</span>
                             </div>
@@ -144,8 +144,9 @@ export default function TasksPage() {
                         {stage !== 'Done' && (
                           <button 
                             onClick={() => advanceTask(task.id, stages[stages.indexOf(stage) + 1])} 
-                            className="flex size-6 items-center justify-center rounded-full bg-zinc-100 text-zinc-500 opacity-0 transition-all hover:bg-indigo-100 hover:text-indigo-600 group-hover:opacity-100 dark:bg-zinc-700 dark:text-zinc-400 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-400"
+                            className="flex size-6 items-center justify-center rounded-full bg-zinc-100 text-zinc-600 dark:text-zinc-400 opacity-0 transition-all hover:bg-indigo-100 hover:text-indigo-600 group-hover:opacity-100 dark:bg-zinc-700 dark:text-zinc-600 dark:hover:bg-indigo-500/20 dark:hover:text-indigo-400"
                             title={`Move to ${stages[stages.indexOf(stage) + 1]}`}
+                            aria-label={`Move to ${stages[stages.indexOf(stage) + 1]}`}
                           >
                             <ChevronRight className="size-3" />
                           </button>
@@ -156,7 +157,7 @@ export default function TasksPage() {
                 })}
                 {stageTasks.length === 0 && (
                   <div className="flex h-24 items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-transparent dark:border-zinc-800">
-                    <p className="text-xs text-zinc-400 dark:text-zinc-500">No tasks in {stage}</p>
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400">No tasks in {stage}</p>
                   </div>
                 )}
               </div>
@@ -188,7 +189,7 @@ export default function TasksPage() {
           <div className="grid grid-cols-2 gap-4">
             <div className="w-full">
               <label className="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Priority</label>
-              <select 
+              <select aria-label="Select option" 
                 value={priority} 
                 onChange={(e) => setPriority(e.target.value)} 
                 className="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:focus:border-indigo-400"
@@ -215,3 +216,4 @@ export default function TasksPage() {
     </div>
   )
 }
+

@@ -93,7 +93,7 @@ export default function MeetingsPage() {
                         <div className="flex items-start justify-between gap-4">
                           <div>
                             <h3 className="font-semibold text-zinc-900 dark:text-white">{m.title}</h3>
-                            <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
+                            <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">
                               <div className="flex items-center gap-1.5">
                                 <Clock className="size-3.5" />
                                 <span>{meetingDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ({m.duration}m)</span>
@@ -119,7 +119,7 @@ export default function MeetingsPage() {
             ) : (
               <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 bg-transparent py-12 dark:border-zinc-800">
                 <Calendar className="mb-3 size-10 text-zinc-300 dark:text-zinc-700" />
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">No upcoming meetings scheduled.</p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">No upcoming meetings scheduled.</p>
               </div>
             )}
           </div>
@@ -127,7 +127,7 @@ export default function MeetingsPage() {
 
         <div>
           <div className="mb-4 flex items-center gap-2">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Past Meetings</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">Past Meetings</h2>
             <Badge variant="neutral">{past.length}</Badge>
           </div>
           
@@ -135,12 +135,12 @@ export default function MeetingsPage() {
             <div className="space-y-3">
               {past.map((m) => (
                 <div key={m.id} className="flex items-center gap-3 rounded-xl border border-transparent bg-zinc-50 p-3 hover:bg-zinc-100 dark:bg-zinc-900/50 dark:hover:bg-zinc-900 transition-colors">
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-zinc-200/50 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-zinc-200/50 text-zinc-600 dark:text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600">
                     <CheckCircle2 className="size-4" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="truncate text-sm font-medium text-zinc-700 dark:text-zinc-300">{m.title}</p>
-                    <p className="truncate text-xs text-zinc-500 dark:text-zinc-500">
+                    <p className="truncate text-xs text-zinc-600 dark:text-zinc-400">
                       {new Date(m.date).toLocaleDateString()} &middot; {m.duration}m
                     </p>
                   </div>
@@ -148,7 +148,7 @@ export default function MeetingsPage() {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-zinc-400 dark:text-zinc-600">No past meetings.</p>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">No past meetings.</p>
           )}
         </div>
       </div>
@@ -176,7 +176,7 @@ export default function MeetingsPage() {
             />
             <div className="w-full">
               <label className="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Duration (min)</label>
-              <select 
+              <select aria-label="Select option" 
                 value={duration} 
                 onChange={(e) => setDuration(e.target.value)} 
                 className="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:focus:border-indigo-400"
@@ -205,3 +205,4 @@ export default function MeetingsPage() {
     </div>
   )
 }
+

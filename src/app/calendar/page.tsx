@@ -65,17 +65,19 @@ export default function CalendarPage() {
           <Button 
             variant="ghost" 
             size="icon" 
+            aria-label="Previous month"
             onClick={() => { if (month === 0) { setYear(year - 1); setMonth(11) } else setMonth(month - 1) }}
           >
             <ChevronLeft className="size-4" />
           </Button>
           <div className="flex min-w-[140px] items-center justify-center gap-2 px-2 text-sm font-medium text-zinc-900 dark:text-zinc-100">
-            <CalendarIcon className="size-4 text-zinc-400" />
+            <CalendarIcon className="size-4 text-zinc-600" />
             {months[month]} {year}
           </div>
           <Button 
             variant="ghost" 
             size="icon" 
+            aria-label="Next month"
             onClick={() => { if (month === 11) { setYear(year + 1); setMonth(0) } else setMonth(month + 1) }}
           >
             <ChevronRight className="size-4" />
@@ -86,7 +88,7 @@ export default function CalendarPage() {
       <Card className="animate-fade-in p-0 overflow-hidden flex-1 min-h-[600px]">
         <div className="grid grid-cols-7 border-b border-zinc-200 bg-zinc-50/50 dark:border-zinc-800 dark:bg-zinc-900/50">
           {days.map((d) => (
-            <div key={d} className="px-3 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+            <div key={d} className="px-3 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 dark:text-zinc-600">
               {d}
             </div>
           ))}
@@ -135,3 +137,4 @@ export default function CalendarPage() {
     </div>
   )
 }
+
