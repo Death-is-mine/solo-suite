@@ -1,19 +1,18 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Send, Check } from 'lucide-react'
+import { Plus, Send, Check, Receipt, DollarSign, Wallet, FileText, ArrowRight } from 'lucide-react'
 import type { InvoiceRecord, TransactionRecord, ExpenseRecord } from '@/lib/database/types'
+import { PageHeader } from '@/components/ui/page-header'
+import { MetricCard } from '@/components/ui/metric-card'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Modal } from '@/components/ui/modal'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { SkeletonCard } from '@/components/ui/skeleton'
 
 type Tab = 'invoices' | 'transactions' | 'expenses'
-
-const statusColor: Record<string, string> = {
-  Draft: 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
-  Sent: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-  Partial: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-  Paid: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-  Overdue: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-  Cancelled: 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-500',
-}
 
 export default function FinancePage() {
   const [tab, setTab] = useState<Tab>('invoices')
@@ -85,7 +84,16 @@ export default function FinancePage() {
   }
 
   if (loading) {
-    return <div className="flex flex-1 items-center justify-center text-sm text-zinc-400">Loading...</div>
+    return (
+      <div className="flex flex-1 flex-col p-6 lg:p-8">
+        <PageHeader title="Finance" description="Track invoices, payments, and expenses" />
+        <div className="grid gap-6 md:grid-cols-3">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      </div>
+    )
   }
 
   const totals = invoices.reduce((acc, inv) => {
@@ -96,121 +104,211 @@ export default function FinancePage() {
   const totalExpenses = expenses.reduce((s, e) => s + e.amount, 0)
 
   return (
-    <div className="flex flex-1 flex-col p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Finance & Accounting</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">Track invoices, payments, and expenses</p>
-        </div>
-        <button onClick={() => setShowNew(true)} className="flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200">
-          <Plus className="size-4" /> New Invoice
-        </button>
+    <div className="flex flex-1 flex-col p-6 lg:p-8">
+      <PageHeader 
+        title="Finance & Accounting" 
+        description="Track invoices, payments, and expenses"
+      >
+        <Button onClick={() => setShowNew(true)} leftIcon={<Plus className="size-4" />}>
+          New Invoice
+        </Button>
+      </PageHeader>
+
+      <div className="mb-8 grid gap-6 md:grid-cols-3">
+        <MetricCard
+          label="Invoiced (Pending)"
+          value={`$${totals.pending.toFixed(2)}`}
+          icon={<Receipt className="size-5" />}
+          accentColor="amber"
+          delay={1}
+        />
+        <MetricCard
+          label="Collected"
+          value={`$${totals.paid.toFixed(2)}`}
+          icon={<DollarSign className="size-5" />}
+          accentColor="emerald"
+          delay={2}
+        />
+        <MetricCard
+          label="Expenses"
+          value={`$${totalExpenses.toFixed(2)}`}
+          icon={<Wallet className="size-5" />}
+          accentColor="rose"
+          delay={3}
+        />
       </div>
 
-      {/* Summary cards */}
-      <div className="mb-6 grid gap-4 md:grid-cols-3">
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">Invoiced (Pending)</p>
-          <p className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">{currency} {totals.pending.toFixed(2)}</p>
+      <Card glass className="animate-slide-up delay-4 p-0 overflow-hidden">
+        <div className="flex border-b border-zinc-200 bg-zinc-50/50 p-2 dark:border-zinc-800 dark:bg-zinc-900/50">
+          {(['invoices', 'transactions', 'expenses'] as Tab[]).map((t) => (
+            <button 
+              key={t} 
+              onClick={() => setTab(t)} 
+              className={`flex-1 rounded-md px-4 py-2 text-sm font-medium capitalize transition-all ${
+                tab === t 
+                  ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white' 
+                  : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200'
+              }`}
+            >
+              {t}
+            </button>
+          ))}
         </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">Collected</p>
-          <p className="text-xl font-semibold text-green-600 dark:text-green-400">{currency} {totals.paid.toFixed(2)}</p>
-        </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">Expenses</p>
-          <p className="text-xl font-semibold text-red-600 dark:text-red-400">{currency} {totalExpenses.toFixed(2)}</p>
-        </div>
-      </div>
 
-      {showNew && (
-        <div className="mb-6 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="mb-3 grid gap-3 md:grid-cols-4">
-            <input value={clientId} onChange={(e) => setClientId(e.target.value)} placeholder="Client ID" className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50" />
-            <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50" />
-            <input value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Amount" type="number" className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50" />
-            <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50">
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-              <option value="GBP">GBP</option>
-              <option value="INR">INR</option>
-              <option value="CAD">CAD</option>
-              <option value="AUD">AUD</option>
-            </select>
+        <div className="p-6">
+          {tab === 'invoices' && (
+            <div className="space-y-3">
+              {invoices.map((inv) => (
+                <div key={inv.id} className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-zinc-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-900">
+                  <div className="flex items-start gap-4">
+                    <div className="rounded-lg bg-zinc-100 p-2.5 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+                      <FileText className="size-5" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-zinc-900 dark:text-white">{inv.id}</p>
+                      <p className="mt-1 text-sm text-zinc-500">
+                        {inv.clientId ? `Client ${inv.clientId}` : 'No client attached'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between sm:justify-end gap-6 sm:w-1/2">
+                    <div className="text-right">
+                      <p className="font-medium text-zinc-900 dark:text-white">{inv.currency} {inv.total.toFixed(2)}</p>
+                      <div className="mt-1">
+                        <Badge 
+                          variant={inv.status === 'Paid' ? 'success' : inv.status === 'Sent' ? 'info' : inv.status === 'Overdue' ? 'error' : 'neutral'}
+                          dot
+                        >
+                          {inv.status}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      {inv.status === 'Draft' && (
+                        <Button variant="outline" size="sm" onClick={() => updateStatus(inv.id, 'Sent')} leftIcon={<Send className="size-3" />}>
+                          Send
+                        </Button>
+                      )}
+                      {inv.status === 'Sent' && (
+                        <Button variant="outline" size="sm" onClick={() => updateStatus(inv.id, 'Paid')} leftIcon={<Check className="size-3" />}>
+                          Mark Paid
+                        </Button>
+                      )}
+                      <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <ArrowRight className="size-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {invoices.length === 0 && (
+                <div className="text-center py-12">
+                  <FileText className="mx-auto size-12 text-zinc-300 dark:text-zinc-700" />
+                  <p className="mt-4 text-zinc-500">No invoices generated yet.</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {tab === 'transactions' && (
+            <div className="space-y-3">
+              {transactions.map((tx) => (
+                <div key={tx.id} className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                  <div>
+                    <p className="font-medium text-zinc-900 dark:text-white">{tx.id}</p>
+                    <p className="mt-1 text-sm text-zinc-500">via {tx.method} &middot; {tx.reference ?? 'No reference'}</p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <p className="font-medium text-zinc-900 dark:text-white">{tx.amount.toFixed(2)}</p>
+                    <Badge variant={tx.status === 'Approved' ? 'success' : tx.status === 'Rejected' ? 'error' : 'warning'} dot>
+                      {tx.status}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+              {transactions.length === 0 && (
+                <div className="text-center py-12">
+                  <DollarSign className="mx-auto size-12 text-zinc-300 dark:text-zinc-700" />
+                  <p className="mt-4 text-zinc-500">No transactions recorded.</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {tab === 'expenses' && (
+            <div className="space-y-3">
+              {expenses.map((ex) => (
+                <div key={ex.id} className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-rose-200 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-rose-900">
+                  <div className="flex items-start gap-4">
+                    <div className="rounded-lg bg-rose-50 p-2.5 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400">
+                      <Wallet className="size-5" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-zinc-900 dark:text-white">{ex.category}</p>
+                      <p className="mt-1 text-sm text-zinc-500">{ex.description ?? 'No description'} &middot; {ex.date}</p>
+                    </div>
+                  </div>
+                  <p className="font-semibold text-rose-600 dark:text-rose-400">-{ex.currency} {ex.amount.toFixed(2)}</p>
+                </div>
+              ))}
+              {expenses.length === 0 && (
+                <div className="text-center py-12">
+                  <Wallet className="mx-auto size-12 text-zinc-300 dark:text-zinc-700" />
+                  <p className="mt-4 text-zinc-500">No expenses recorded.</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </Card>
+
+      <Modal 
+        isOpen={showNew} 
+        onClose={() => setShowNew(false)} 
+        title="Create Invoice" 
+        description="Generate a new invoice for a client."
+      >
+        <div className="space-y-4">
+          <Input 
+            label="Client ID" 
+            value={clientId} 
+            onChange={(e) => setClientId(e.target.value)} 
+            placeholder="e.g. client_123" 
+          />
+          <Input 
+            label="Description" 
+            value={description} 
+            onChange={(e) => setDescription(e.target.value)} 
+            placeholder="Web design services" 
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <Input 
+              label="Amount" 
+              type="number" 
+              value={amount} 
+              onChange={(e) => setAmount(e.target.value)} 
+              placeholder="0.00" 
+            />
+            <div className="w-full">
+              <label className="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Currency</label>
+              <select 
+                value={currency} 
+                onChange={(e) => setCurrency(e.target.value)} 
+                className="block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:focus:border-indigo-400"
+              >
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+                <option value="INR">INR (₹)</option>
+              </select>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <button onClick={createInvoice} className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900">Create</button>
-            <button onClick={() => setShowNew(false)} className="rounded-md px-3 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400">Cancel</button>
+          <div className="mt-6 flex justify-end gap-3">
+            <Button variant="ghost" onClick={() => setShowNew(false)}>Cancel</Button>
+            <Button onClick={createInvoice}>Create Invoice</Button>
           </div>
         </div>
-      )}
-
-      {/* Tabs */}
-      <div className="mb-4 flex gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800">
-        {(['invoices', 'transactions', 'expenses'] as Tab[]).map((t) => (
-          <button key={t} onClick={() => setTab(t)} className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium capitalize ${tab === t ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-zinc-50' : 'text-zinc-500 hover:text-zinc-700 dark:text-zinc-400'}`}>
-            {t}
-          </button>
-        ))}
-      </div>
-
-      {/* Tab content */}
-      {tab === 'invoices' && (
-        <div className="space-y-2">
-          {invoices.map((inv) => (
-            <div key={inv.id} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-              <div>
-                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{inv.id}</p>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">{inv.currency} {inv.total.toFixed(2)} · {inv.clientId ? `Client ${inv.clientId}` : 'No client'}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColor[inv.status] ?? ''}`}>{inv.status}</span>
-                {inv.status === 'Draft' && (
-                  <button onClick={() => updateStatus(inv.id, 'Sent')} className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50">
-                    <Send className="size-3" /> Send
-                  </button>
-                )}
-                {inv.status === 'Sent' && (
-                  <button onClick={() => updateStatus(inv.id, 'Paid')} className="flex items-center gap-1 text-xs text-green-600 hover:text-green-700">
-                    <Check className="size-3" /> Mark Paid
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-          {invoices.length === 0 && <p className="pt-4 text-center text-sm text-zinc-400">No invoices yet.</p>}
-        </div>
-      )}
-
-      {tab === 'transactions' && (
-        <div className="space-y-2">
-          {transactions.map((tx) => (
-            <div key={tx.id} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-              <div>
-                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{tx.id}</p>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">{tx.amount.toFixed(2)} via {tx.method} · {tx.reference ?? 'No ref'}</p>
-              </div>
-              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${tx.status === 'Approved' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : tx.status === 'Rejected' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'}`}>{tx.status}</span>
-            </div>
-          ))}
-          {transactions.length === 0 && <p className="pt-4 text-center text-sm text-zinc-400">No transactions yet.</p>}
-        </div>
-      )}
-
-      {tab === 'expenses' && (
-        <div className="space-y-2">
-          {expenses.map((ex) => (
-            <div key={ex.id} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-              <div>
-                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{ex.category}</p>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">{ex.description ?? 'No description'} · {ex.date}</p>
-              </div>
-              <span className="text-sm font-medium text-red-600 dark:text-red-400">{ex.currency} {ex.amount.toFixed(2)}</span>
-            </div>
-          ))}
-          {expenses.length === 0 && <p className="pt-4 text-center text-sm text-zinc-400">No expenses recorded.</p>}
-        </div>
-      )}
+      </Modal>
     </div>
   )
 }

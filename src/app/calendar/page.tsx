@@ -1,7 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react'
 import type { MeetingRecord, TaskRecord } from '@/lib/database/types'
+import { PageHeader } from '@/components/ui/page-header'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { SkeletonCard } from '@/components/ui/skeleton'
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -29,9 +34,9 @@ export default function CalendarPage() {
   const daysInMonth = new Date(year, month + 1, 0).getDate()
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
 
-  function getEvents(day: number): { type: string; title: string }[] {
+  function getEvents(day: number): { type: 'Meeting' | 'Task'; title: string }[] {
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-    const events: { type: string; title: string }[] = []
+    const events: { type: 'Meeting' | 'Task'; title: string }[] = []
     meetings.forEach((m) => {
       if (m.date.startsWith(dateStr)) events.push({ type: 'Meeting', title: m.title })
     })
@@ -41,28 +46,54 @@ export default function CalendarPage() {
     return events
   }
 
-  if (loading) return <div className="flex flex-1 items-center justify-center text-sm text-zinc-400">Loading...</div>
+  if (loading) {
+    return (
+      <div className="flex flex-1 flex-col p-6 lg:p-8">
+        <PageHeader title="Calendar" description="Schedule and upcoming tasks" />
+        <SkeletonCard className="h-[600px]" />
+      </div>
+    )
+  }
 
   return (
-    <div className="flex flex-1 flex-col p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Calendar</h1>
-        <div className="flex items-center gap-2">
-          <button onClick={() => { if (month === 0) { setYear(year - 1); setMonth(11) } else setMonth(month - 1) }} className="rounded-md px-2 py-1 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800">←</button>
-          <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{months[month]} {year}</span>
-          <button onClick={() => { if (month === 11) { setYear(year + 1); setMonth(0) } else setMonth(month + 1) }} className="rounded-md px-2 py-1 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800">→</button>
+    <div className="flex flex-1 flex-col p-6 lg:p-8">
+      <PageHeader 
+        title="Calendar" 
+        description="Manage your meetings and project deadlines"
+      >
+        <div className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white p-1 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => { if (month === 0) { setYear(year - 1); setMonth(11) } else setMonth(month - 1) }}
+          >
+            <ChevronLeft className="size-4" />
+          </Button>
+          <div className="flex min-w-[140px] items-center justify-center gap-2 px-2 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            <CalendarIcon className="size-4 text-zinc-400" />
+            {months[month]} {year}
+          </div>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => { if (month === 11) { setYear(year + 1); setMonth(0) } else setMonth(month + 1) }}
+          >
+            <ChevronRight className="size-4" />
+          </Button>
         </div>
-      </div>
+      </PageHeader>
 
-      <div className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-        <div className="grid grid-cols-7 border-b border-zinc-200 dark:border-zinc-800">
+      <Card className="animate-fade-in p-0 overflow-hidden flex-1 min-h-[600px]">
+        <div className="grid grid-cols-7 border-b border-zinc-200 bg-zinc-50/50 dark:border-zinc-800 dark:bg-zinc-900/50">
           {days.map((d) => (
-            <div key={d} className="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400">{d}</div>
+            <div key={d} className="px-3 py-3 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+              {d}
+            </div>
           ))}
         </div>
-        <div className="grid grid-cols-7">
+        <div className="grid grid-cols-7 auto-rows-fr h-[calc(100%-45px)] bg-zinc-100/50 dark:bg-zinc-950/50 gap-[1px]">
           {Array.from({ length: firstDay }).map((_, i) => (
-            <div key={`empty-${i}`} className="min-h-24 border-b border-r border-zinc-100 p-2 dark:border-zinc-800" />
+            <div key={`empty-${i}`} className="bg-white p-2 dark:bg-zinc-900 opacity-50" />
           ))}
           {Array.from({ length: daysInMonth }).map((_, i) => {
             const day = i + 1
@@ -70,21 +101,37 @@ export default function CalendarPage() {
             const events = getEvents(day)
             const isToday = dateStr === today
             return (
-              <div key={day} className={`min-h-24 border-b border-r border-zinc-100 p-2 dark:border-zinc-800 ${isToday ? 'bg-zinc-50 dark:bg-zinc-800/50' : ''}`}>
-                <span className={`inline-flex size-6 items-center justify-center rounded-full text-xs ${isToday ? 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900' : 'text-zinc-600 dark:text-zinc-400'}`}>{day}</span>
-                <div className="mt-1 space-y-0.5">
-                  {events.slice(0, 3).map((e, j) => (
-                    <div key={j} className={`truncate rounded px-1 py-0.5 text-[10px] ${e.type === 'Meeting' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'}`}>
+              <div 
+                key={day} 
+                className={`group relative bg-white p-2 transition-colors hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-800/80 ${isToday ? 'bg-indigo-50/30 dark:bg-indigo-950/20 ring-1 ring-inset ring-indigo-500/20' : ''}`}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <span 
+                    className={`inline-flex size-7 items-center justify-center rounded-full text-sm font-medium ${isToday ? 'bg-indigo-600 text-white shadow-sm dark:bg-indigo-500' : 'text-zinc-700 dark:text-zinc-300'}`}
+                  >
+                    {day}
+                  </span>
+                </div>
+                <div className="space-y-1.5 overflow-y-auto max-h-[calc(100%-35px)] custom-scrollbar pr-1">
+                  {events.map((e, j) => (
+                    <div 
+                      key={j} 
+                      title={e.title}
+                      className={`truncate rounded-md px-2 py-1 text-[11px] font-medium transition-colors ${
+                        e.type === 'Meeting' 
+                          ? 'bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20' 
+                          : 'bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20'
+                      }`}
+                    >
                       {e.title}
                     </div>
                   ))}
-                  {events.length > 3 && <p className="text-[10px] text-zinc-400">+{events.length - 3} more</p>}
                 </div>
               </div>
             )
           })}
         </div>
-      </div>
+      </Card>
     </div>
   )
 }

@@ -7,12 +7,12 @@ test('home page redirects to dashboard', async ({ page }) => {
 
 test('leads page loads and shows pipeline', async ({ page }) => {
   await page.goto('/leads')
-  await expect(page.locator('h1')).toContainText('Leads')
+  await expect(page.locator('h1')).toContainText('Keep momentum visible')
 })
 
 test('clients page loads', async ({ page }) => {
   await page.goto('/clients')
-  await expect(page.locator('h1')).toContainText('Clients')
+  await expect(page.locator('h1')).toContainText('Clients, with context')
 })
 
 test('finance page loads with summary', async ({ page }) => {

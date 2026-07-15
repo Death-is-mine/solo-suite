@@ -9,6 +9,7 @@ export class LocalFileSystemAdapter implements StorageAdapter {
     this.root = root ?? path.join(process.cwd(), 'storage')
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async uploadFile(filePath: string, content: Buffer | string, _mimeType: string): Promise<string> {
     const absolute = path.join(this.root, filePath)
     await fs.mkdir(path.dirname(absolute), { recursive: true })

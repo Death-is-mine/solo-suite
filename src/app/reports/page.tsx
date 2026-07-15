@@ -1,8 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { TrendingUp, TrendingDown, DollarSign, Users, Briefcase, FileText } from 'lucide-react'
+import { TrendingUp, TrendingDown, DollarSign, Users, Briefcase, FileText, BarChart3, PieChart } from 'lucide-react'
 import type { LeadRecord, ClientRecord, ProjectRecord, InvoiceRecord, ExpenseRecord, TransactionRecord } from '@/lib/database/types'
+import { PageHeader } from '@/components/ui/page-header'
+import { MetricCard } from '@/components/ui/metric-card'
+import { Card } from '@/components/ui/card'
+import { SkeletonCard } from '@/components/ui/skeleton'
+import { ProgressBar } from '@/components/ui/progress-bar'
 
 export default function ReportsPage() {
   const [leads, setLeads] = useState<LeadRecord[]>([])
@@ -28,124 +33,178 @@ export default function ReportsPage() {
     return () => { mounted = false }
   }, [])
 
-  if (loading) return <div className="flex flex-1 items-center justify-center text-sm text-zinc-400">Loading...</div>
+  if (loading) {
+    return (
+      <div className="flex flex-1 flex-col p-6 lg:p-8">
+        <PageHeader title="Reports" description="Business performance at a glance" />
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      </div>
+    )
+  }
 
   const totalInvoiced = invoices.reduce((s, i) => s + i.total, 0)
   const totalPaid = invoices.filter((i) => i.status === 'Paid').reduce((s, i) => s + i.total, 0)
   const totalExpensed = expenses.reduce((s, e) => s + e.amount, 0)
   const totalPending = invoices.filter((i) => i.status === 'Sent' || i.status === 'Partial' || i.status === 'Overdue').reduce((s, i) => s + i.total, 0)
+  
   const wonLeads = leads.filter((l) => l.stage === 'Won').length
   const conversionRate = leads.length > 0 ? Math.round((wonLeads / leads.length) * 100) : 0
   const activeProjects = projects.filter((p) => p.status === 'Active').length
 
+  const leadStages = ['New', 'Contacted', 'Qualified', 'Proposal Sent', 'Won', 'Lost'] as const
+  const projectStatuses = ['Planning', 'Active', 'Paused', 'Completed', 'Archived'] as const
+
   return (
-    <div className="flex flex-1 flex-col p-6">
-      <div className="mb-6">
-        <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Reports</h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">Business performance at a glance</p>
+    <div className="flex flex-1 flex-col p-6 lg:p-8">
+      <PageHeader 
+        title="Reports & Analytics" 
+        description="Comprehensive overview of your business performance"
+      />
+
+      <div className="mb-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <MetricCard
+          label="Revenue"
+          value={`$${totalPaid.toFixed(0)}`}
+          icon={<DollarSign className="size-5" />}
+          trend={`${totalPending.toFixed(0)} pending`}
+
+          accentColor="emerald"
+          delay={1}
+        />
+        <MetricCard
+          label="Invoiced"
+          value={`$${totalInvoiced.toFixed(0)}`}
+          icon={<FileText className="size-5" />}
+          trend={`${invoices.length} invoices`}
+
+          accentColor="indigo"
+          delay={2}
+        />
+        <MetricCard
+          label="Expenses"
+          value={`$${totalExpensed.toFixed(0)}`}
+          icon={<TrendingDown className="size-5" />}
+          trend={`${expenses.length} expenses`}
+
+          accentColor="rose"
+          delay={3}
+        />
+        <MetricCard
+          label="Conversion"
+          value={`${conversionRate}%`}
+          icon={<TrendingUp className="size-5" />}
+          trend={`${wonLeads} won / ${leads.length} leads`}
+
+          accentColor="amber"
+          delay={4}
+        />
       </div>
 
-      <div className="mb-6 grid gap-4 md:grid-cols-4">
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-            <DollarSign className="size-4" />
-            <span className="text-xs font-medium">Revenue</span>
-          </div>
-          <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">${totalPaid.toFixed(0)}</p>
-          <p className="text-xs text-zinc-400">${totalPending.toFixed(0)} pending</p>
-        </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="flex items-center gap-2 text-zinc-500">
-            <FileText className="size-4" />
-            <span className="text-xs font-medium">Invoiced</span>
-          </div>
-          <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">${totalInvoiced.toFixed(0)}</p>
-          <p className="text-xs text-zinc-400">{invoices.length} invoice{invoices.length !== 1 ? 's' : ''}</p>
-        </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
-            <TrendingDown className="size-4" />
-            <span className="text-xs font-medium">Expenses</span>
-          </div>
-          <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">${totalExpensed.toFixed(0)}</p>
-          <p className="text-xs text-zinc-400">{expenses.length} expense{expenses.length !== 1 ? 's' : ''}</p>
-        </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="flex items-center gap-2 text-zinc-500">
-            <TrendingUp className="size-4" />
-            <span className="text-xs font-medium">Conversion</span>
-          </div>
-          <p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{conversionRate}%</p>
-          <p className="text-xs text-zinc-400">{wonLeads} won / {leads.length} leads</p>
-        </div>
+      <div className="mb-8 grid gap-6 md:grid-cols-3">
+        <MetricCard
+          label="Clients"
+          value={clients.length.toString()}
+          icon={<Users className="size-5" />}
+          trend="Total clients"
+
+          accentColor="blue"
+          delay={5}
+        />
+        <MetricCard
+          label="Projects"
+          value={activeProjects.toString()}
+          icon={<Briefcase className="size-5" />}
+          trend={`${projects.length} total · ${activeProjects} active`}
+
+          accentColor="purple"
+          delay={6}
+        />
+        <MetricCard
+          label="Transactions"
+          value={transactions.length.toString()}
+          icon={<DollarSign className="size-5" />}
+          trend={`${transactions.filter((t) => t.status === 'Approved').length} approved · ${transactions.filter((t) => t.status === 'Pending').length} pending`}
+
+          accentColor="cyan"
+          delay={7}
+        />
       </div>
 
-      <div className="mb-6 grid gap-4 md:grid-cols-3">
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="flex items-center gap-2 text-zinc-500">
-            <Users className="size-4" />
-            <span className="text-xs font-medium">Clients</span>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card glass className="animate-slide-up delay-8">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Lead Pipeline</h2>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">Distribution of leads across stages</p>
+            </div>
+            <div className="rounded-lg bg-zinc-100 p-2 dark:bg-zinc-800">
+              <BarChart3 className="size-5 text-zinc-500 dark:text-zinc-400" />
+            </div>
           </div>
-          <p className="mt-1 text-xl font-semibold text-zinc-900 dark:text-zinc-50">{clients.length}</p>
-          <p className="text-xs text-zinc-400">Total clients</p>
-        </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="flex items-center gap-2 text-zinc-500">
-            <Briefcase className="size-4" />
-            <span className="text-xs font-medium">Projects</span>
-          </div>
-          <p className="mt-1 text-xl font-semibold text-zinc-900 dark:text-zinc-50">{activeProjects}</p>
-          <p className="text-xs text-zinc-400">{projects.length} total · {activeProjects} active</p>
-        </div>
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="flex items-center gap-2 text-zinc-500">
-            <DollarSign className="size-4" />
-            <span className="text-xs font-medium">Transactions</span>
-          </div>
-          <p className="mt-1 text-xl font-semibold text-zinc-900 dark:text-zinc-50">{transactions.length}</p>
-          <p className="text-xs text-zinc-400">
-            {transactions.filter((t) => t.status === 'Approved').length} approved · {transactions.filter((t) => t.status === 'Pending').length} pending
-          </p>
-        </div>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <div>
-          <h2 className="mb-3 text-sm font-medium text-zinc-900 dark:text-zinc-50">Pipeline</h2>
-          <div className="space-y-2">
-            {(['New', 'Contacted', 'Qualified', 'Proposal Sent', 'Won', 'Lost'] as const).map((stage) => {
+          
+          <div className="space-y-5">
+            {leadStages.map((stage) => {
               const count = leads.filter((l) => l.stage === stage).length
               const pct = leads.length > 0 ? (count / leads.length) * 100 : 0
+              
+              const color = 
+                stage === 'Won' ? 'bg-emerald-500 dark:bg-emerald-500' : 
+                stage === 'Lost' ? 'bg-rose-500 dark:bg-rose-500' : 
+                'bg-indigo-500 dark:bg-indigo-500'
+
               return (
-                <div key={stage} className="flex items-center gap-3">
-                  <span className="w-28 text-xs text-zinc-600 dark:text-zinc-400">{stage}</span>
-                  <div className="flex-1 rounded-full bg-zinc-100 dark:bg-zinc-800">
-                    <div className="rounded-full bg-zinc-900 py-1 dark:bg-zinc-50" style={{ width: `${pct}%` }} />
+                <div key={stage}>
+                  <div className="mb-2 flex items-center justify-between text-sm">
+                    <span className="font-medium text-zinc-700 dark:text-zinc-300">{stage}</span>
+                    <span className="text-zinc-500">{count} ({pct.toFixed(0)}%)</span>
                   </div>
-                  <span className="w-10 text-right text-xs text-zinc-500">{count}</span>
+                  <ProgressBar progress={pct} colorClass={color} />
                 </div>
               )
             })}
           </div>
-        </div>
-        <div>
-          <h2 className="mb-3 text-sm font-medium text-zinc-900 dark:text-zinc-50">Projects by Status</h2>
-          <div className="space-y-2">
-            {(['Planning', 'Active', 'Paused', 'Completed', 'Archived'] as const).map((status) => {
+        </Card>
+
+        <Card glass className="animate-slide-up delay-9">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Projects Overview</h2>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">Current status of all projects</p>
+            </div>
+            <div className="rounded-lg bg-zinc-100 p-2 dark:bg-zinc-800">
+              <PieChart className="size-5 text-zinc-500 dark:text-zinc-400" />
+            </div>
+          </div>
+          
+          <div className="space-y-5">
+            {projectStatuses.map((status) => {
               const count = projects.filter((p) => p.status === status).length
               const pct = projects.length > 0 ? (count / projects.length) * 100 : 0
+              
+              const color = 
+                status === 'Active' ? 'bg-emerald-500 dark:bg-emerald-500' : 
+                status === 'Planning' ? 'bg-blue-500 dark:bg-blue-500' : 
+                status === 'Paused' ? 'bg-amber-500 dark:bg-amber-500' : 
+                status === 'Archived' ? 'bg-rose-500 dark:bg-rose-500' : 
+                'bg-zinc-500 dark:bg-zinc-500'
+
               return (
-                <div key={status} className="flex items-center gap-3">
-                  <span className="w-28 text-xs text-zinc-600 dark:text-zinc-400">{status}</span>
-                  <div className="flex-1 rounded-full bg-zinc-100 dark:bg-zinc-800">
-                    <div className="rounded-full bg-zinc-900 py-1 dark:bg-zinc-50" style={{ width: `${pct}%` }} />
+                <div key={status}>
+                  <div className="mb-2 flex items-center justify-between text-sm">
+                    <span className="font-medium text-zinc-700 dark:text-zinc-300">{status}</span>
+                    <span className="text-zinc-500">{count} ({pct.toFixed(0)}%)</span>
                   </div>
-                  <span className="w-10 text-right text-xs text-zinc-500">{count}</span>
+                  <ProgressBar progress={pct} colorClass={color} />
                 </div>
               )
             })}
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   )

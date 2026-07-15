@@ -1,23 +1,22 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { Plus, Play, Pause, CheckCircle, Archive } from 'lucide-react'
+import { Plus, Play, Pause, CheckCircle2, Archive, Folder, Calendar, ArrowRight, MoreVertical } from 'lucide-react'
 import type { ProjectRecord } from '@/lib/database/types'
+import { PageHeader } from '@/components/ui/page-header'
+import { Button } from '@/components/ui/button'
+import { Modal } from '@/components/ui/modal'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { SkeletonCard } from '@/components/ui/skeleton'
+import { Card } from '@/components/ui/card'
 
-const statusIcon: Record<string, typeof Play> = {
-  Planning: Play,
-  Active: Play,
-  Paused: Pause,
-  Completed: CheckCircle,
-  Archived: Archive,
-}
-
-const statusColor: Record<string, string> = {
-  Planning: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-  Active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-  Paused: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-  Completed: 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
-  Archived: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
+const statusColor: Record<string, 'info' | 'success' | 'warning' | 'error' | 'neutral'> = {
+  Planning: 'info',
+  Active: 'success',
+  Paused: 'warning',
+  Completed: 'neutral',
+  Archived: 'error',
 }
 
 const nextStatus: Record<string, string> = {
@@ -66,69 +65,151 @@ export default function ProjectsPage() {
   }
 
   if (loading) {
-    return <div className="flex flex-1 items-center justify-center text-sm text-zinc-400">Loading...</div>
+    return (
+      <div className="flex flex-1 flex-col p-6 lg:p-8">
+        <PageHeader title="Projects" description="Manage your client projects" />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="flex flex-1 flex-col p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Projects</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">{projects.length} project{projects.length !== 1 ? 's' : ''}</p>
-        </div>
-        <button onClick={() => setShowNew(true)} className="flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200">
-          <Plus className="size-4" /> New Project
-        </button>
-      </div>
+    <div className="flex flex-1 flex-col p-6 lg:p-8">
+      <PageHeader 
+        title="Projects" 
+        description={`${projects.length} project${projects.length !== 1 ? 's' : ''} total`}
+      >
+        <Button onClick={() => setShowNew(true)} leftIcon={<Plus className="size-4" />}>
+          New Project
+        </Button>
+      </PageHeader>
 
-      {showNew && (
-        <div className="mb-6 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="mb-3 flex gap-3">
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Project name" className="flex-1 rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50" />
-            <input value={clientId} onChange={(e) => setClientId(e.target.value)} placeholder="Client ID" className="flex-1 rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50" />
-          </div>
-          <div className="flex gap-2">
-            <button onClick={createProject} className="rounded-md bg-zinc-900 px-3 py-1.5 text-sm text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900">Create</button>
-            <button onClick={() => setShowNew(false)} className="rounded-md px-3 py-1.5 text-sm text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400">Cancel</button>
-          </div>
-        </div>
-      )}
-
-      <div className="space-y-3">
-        {projects.map((p) => {
-          const Icon = statusIcon[p.status] ?? Play
-          return (
-            <div key={p.id} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-              <div className="flex items-center gap-3">
-                <Icon className="size-5 text-zinc-400" />
-                <div>
-                  <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{p.name}</p>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">{p.clientId ? `Client ${p.clientId}` : 'No client'} · {p.startDate ?? 'No start date'}{p.endDate ? ` → ${p.endDate}` : ''}</p>
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {projects.map((p, idx) => (
+          <Card 
+            key={p.id} 
+            className={`group flex flex-col justify-between animate-slide-up delay-${idx % 5 + 1} overflow-hidden hover:border-indigo-200 hover:shadow-md dark:hover:border-indigo-900 transition-all`}
+          >
+            <div className="p-5">
+              <div className="flex items-start justify-between">
+                <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400">
+                  <Folder className="size-6" />
                 </div>
+                <Badge variant={statusColor[p.status] ?? 'neutral'} dot>
+                  {p.status}
+                </Badge>
               </div>
-              <div className="flex items-center gap-2">
-                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColor[p.status] ?? ''}`}>{p.status}</span>
-                {p.status !== 'Completed' && p.status !== 'Archived' && (
-                  <button onClick={() => updateStatus(p.id, nextStatus[p.status] ?? 'Active')} className="rounded-md px-2 py-1 text-xs text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-50">
-                    {p.status === 'Planning' || p.status === 'Paused' ? 'Start' : 'Pause'}
-                  </button>
-                )}
-                {p.status !== 'Completed' && p.status !== 'Archived' && (
-                  <button onClick={() => updateStatus(p.id, 'Completed')} className="rounded-md px-2 py-1 text-xs text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20">
-                    Complete
-                  </button>
-                )}
-                {p.status === 'Completed' && (
-                  <button onClick={() => updateStatus(p.id, 'Archived')} className="rounded-md px-2 py-1 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">
-                    Archive
-                  </button>
+              
+              <div className="mt-5">
+                <h3 className="text-lg font-semibold text-zinc-900 dark:text-white line-clamp-1">{p.name}</h3>
+                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                  {p.clientId ? `Client: ${p.clientId}` : 'Internal Project'}
+                </p>
+              </div>
+              
+              <div className="mt-6 flex items-center gap-4 text-xs text-zinc-500 dark:text-zinc-400">
+                <div className="flex items-center gap-1.5">
+                  <Calendar className="size-3.5" />
+                  <span>{p.startDate ?? 'No start date'}</span>
+                </div>
+                {p.endDate && (
+                  <>
+                    <ArrowRight className="size-3 text-zinc-300 dark:text-zinc-600" />
+                    <span>{p.endDate}</span>
+                  </>
                 )}
               </div>
             </div>
-          )
-        })}
-        {projects.length === 0 && <p className="pt-4 text-center text-sm text-zinc-400">No projects yet. Create one after setting up a client.</p>}
+            
+            <div className="border-t border-zinc-100 bg-zinc-50/50 p-3 px-5 dark:border-zinc-800/50 dark:bg-zinc-900/50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  {p.status !== 'Completed' && p.status !== 'Archived' && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => updateStatus(p.id, nextStatus[p.status] ?? 'Active')}
+                      className={p.status === 'Planning' || p.status === 'Paused' ? 'text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400' : 'text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:text-amber-400'}
+                      leftIcon={p.status === 'Planning' || p.status === 'Paused' ? <Play className="size-3.5" /> : <Pause className="size-3.5" />}
+                    >
+                      {p.status === 'Planning' || p.status === 'Paused' ? 'Start' : 'Pause'}
+                    </Button>
+                  )}
+                  {p.status !== 'Completed' && p.status !== 'Archived' && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => updateStatus(p.id, 'Completed')}
+                      className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400"
+                      leftIcon={<CheckCircle2 className="size-3.5" />}
+                    >
+                      Complete
+                    </Button>
+                  )}
+                  {p.status === 'Completed' && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => updateStatus(p.id, 'Archived')}
+                      className="text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400"
+                      leftIcon={<Archive className="size-3.5" />}
+                    >
+                      Archive
+                    </Button>
+                  )}
+                </div>
+                <Button variant="ghost" size="icon" className="text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <MoreVertical className="size-4" />
+                </Button>
+              </div>
+            </div>
+          </Card>
+        ))}
       </div>
+      
+      {projects.length === 0 && (
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 bg-zinc-50 py-24 dark:border-zinc-800 dark:bg-zinc-900/50">
+          <Folder className="mb-4 size-12 text-zinc-300 dark:text-zinc-700" />
+          <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">No projects found</h3>
+          <p className="mt-2 max-w-sm text-center text-sm text-zinc-500 dark:text-zinc-400">
+            Get started by creating a new project. You can link it to an existing client or keep it internal.
+          </p>
+          <Button onClick={() => setShowNew(true)} className="mt-6" leftIcon={<Plus className="size-4" />}>
+            Create Project
+          </Button>
+        </div>
+      )}
+
+      <Modal 
+        isOpen={showNew} 
+        onClose={() => setShowNew(false)} 
+        title="Create Project" 
+        description="Set up a new workspace for your client's project."
+      >
+        <div className="space-y-4">
+          <Input 
+            label="Project Name" 
+            value={name} 
+            onChange={(e) => setName(e.target.value)} 
+            placeholder="e.g. Website Redesign" 
+            autoFocus
+          />
+          <Input 
+            label="Client ID (Optional)" 
+            value={clientId} 
+            onChange={(e) => setClientId(e.target.value)} 
+            placeholder="e.g. cli_123" 
+          />
+          <div className="mt-6 flex justify-end gap-3">
+            <Button variant="ghost" onClick={() => setShowNew(false)}>Cancel</Button>
+            <Button onClick={createProject}>Create Project</Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }
