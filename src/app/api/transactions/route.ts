@@ -1,21 +1,34 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/database'
+import { validateBody, parseJsonBody } from '@/lib/api/validate'
+import { transactionCreateSchema } from '@/lib/api/schemas'
+import { withAuth } from '@/lib/api/with-auth'
+import { handleApiError } from '@/lib/api/errors'
 
-export async function GET() {
+export const GET = withAuth(async (_req, session) => {
   const transactions = await db.getTransactions()
   return NextResponse.json(transactions)
-}
+})
 
-export async function POST(request: Request) {
-  const body = await request.json()
-  const transaction = await db.createTransaction({
-    invoiceId: body.invoiceId,
-    clientId: body.clientId,
-    amount: body.amount,
-    method: body.method ?? 'Other',
-    reference: body.reference,
-    receiptLink: body.receiptLink,
-    status: 'Pending',
-  })
-  return NextResponse.json(transaction, { status: 201 })
-}
+export const POST = withAuth(async (request, session) => {
+  const { body, error: jsonError } = await parseJsonBody(request)
+  if (jsonError) return jsonError
+
+  const { data, error } = validateBody(transactionCreateSchema, body)
+  if (error) return error
+
+  try {
+    const transaction = await db.createTransaction({
+      invoiceId: data.invoiceId,
+      clientId: data.clientId,
+      amount: data.amount,
+      method: data.method ?? 'Other',
+      reference: data.reference,
+      receiptLink: data.receiptLink,
+      status: data.status ?? 'Pending',
+    })
+    return NextResponse.json(transaction, { status: 201 })
+  } catch (e) {
+    return handleApiError(e)
+  }
+})
