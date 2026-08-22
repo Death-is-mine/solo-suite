@@ -1,9 +1,13 @@
 import { auth } from '@/lib/auth/config'
+import { NextResponse } from 'next/server'
 
-const handler = auth as unknown as (request: Request) => Response | Promise<Response>
-
-export function proxy(request: Request) {
-  return handler(request)
+export async function proxy(request: Request) {
+  const session = await auth()
+  if (!session) {
+    const url = new URL('/login', request.url)
+    return NextResponse.redirect(url)
+  }
+  return NextResponse.next()
 }
 
 export const config = {

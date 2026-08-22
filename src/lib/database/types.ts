@@ -1,81 +1,83 @@
+import { getContext } from '@/lib/workspace-context'
+
 export interface WorkspaceDatabase {
   // Leads
   getLeads(): Promise<LeadRecord[]>
   getLead(id: string): Promise<LeadRecord | null>
-  createLead(data: Omit<LeadRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<LeadRecord>
+  createLead(data: Omit<LeadRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>): Promise<LeadRecord>
   updateLead(id: string, data: Partial<LeadRecord>): Promise<LeadRecord>
 
   // Clients
   getClients(): Promise<ClientRecord[]>
   getClient(id: string): Promise<ClientRecord | null>
-  createClient(data: Omit<ClientRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<ClientRecord>
+  createClient(data: Omit<ClientRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>): Promise<ClientRecord>
   updateClient(id: string, data: Partial<ClientRecord>): Promise<ClientRecord>
 
   // Projects
   getProjects(): Promise<ProjectRecord[]>
   getProject(id: string): Promise<ProjectRecord | null>
-  createProject(data: Omit<ProjectRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<ProjectRecord>
+  createProject(data: Omit<ProjectRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>): Promise<ProjectRecord>
   updateProject(id: string, data: Partial<ProjectRecord>): Promise<ProjectRecord>
 
   // Agreements
   getAgreements(): Promise<AgreementRecord[]>
   getAgreement(id: string): Promise<AgreementRecord | null>
-  createAgreement(data: Omit<AgreementRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<AgreementRecord>
+  createAgreement(data: Omit<AgreementRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>): Promise<AgreementRecord>
   updateAgreement(id: string, data: Partial<AgreementRecord>): Promise<AgreementRecord>
 
   // Invoices
   getInvoices(): Promise<InvoiceRecord[]>
   getInvoice(id: string): Promise<InvoiceRecord | null>
-  createInvoice(data: Omit<InvoiceRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<InvoiceRecord>
+  createInvoice(data: Omit<InvoiceRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>): Promise<InvoiceRecord>
   updateInvoice(id: string, data: Partial<InvoiceRecord>): Promise<InvoiceRecord>
 
   // Transactions
   getTransactions(): Promise<TransactionRecord[]>
-  createTransaction(data: Omit<TransactionRecord, 'id' | 'createdAt'>): Promise<TransactionRecord>
+  createTransaction(data: Omit<TransactionRecord, 'id' | 'createdAt' | 'workspaceId'>): Promise<TransactionRecord>
 
   // Expenses
   getExpenses(): Promise<ExpenseRecord[]>
-  createExpense(data: Omit<ExpenseRecord, 'id' | 'createdAt'>): Promise<ExpenseRecord>
+  createExpense(data: Omit<ExpenseRecord, 'id' | 'createdAt' | 'workspaceId'>): Promise<ExpenseRecord>
 
   // Tasks
   getTasks(projectId?: string): Promise<TaskRecord[]>
   getTask(id: string): Promise<TaskRecord | null>
-  createTask(data: Omit<TaskRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<TaskRecord>
+  createTask(data: Omit<TaskRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>): Promise<TaskRecord>
   updateTask(id: string, data: Partial<TaskRecord>): Promise<TaskRecord>
 
   // Meetings
   getMeetings(projectId?: string): Promise<MeetingRecord[]>
   getMeeting(id: string): Promise<MeetingRecord | null>
-  createMeeting(data: Omit<MeetingRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<MeetingRecord>
+  createMeeting(data: Omit<MeetingRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>): Promise<MeetingRecord>
   updateMeeting(id: string, data: Partial<MeetingRecord>): Promise<MeetingRecord>
 
   // Files
   getFiles(projectId?: string): Promise<FileRecord[]>
   getFile(id: string): Promise<FileRecord | null>
-  createFile(data: Omit<FileRecord, 'id' | 'createdAt'>): Promise<FileRecord>
+  createFile(data: Omit<FileRecord, 'id' | 'createdAt' | 'workspaceId'>): Promise<FileRecord>
   deleteFile(id: string): Promise<void>
 
   // Documents
   getDocuments(projectId?: string): Promise<DocumentRecord[]>
   getDocument(id: string): Promise<DocumentRecord | null>
-  createDocument(data: Omit<DocumentRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<DocumentRecord>
+  createDocument(data: Omit<DocumentRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>): Promise<DocumentRecord>
   updateDocument(id: string, data: Partial<DocumentRecord>): Promise<DocumentRecord>
 
   // Retainers
   getRetainers(): Promise<RetainerRecord[]>
   getRetainer(id: string): Promise<RetainerRecord | null>
-  createRetainer(data: Omit<RetainerRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<RetainerRecord>
+  createRetainer(data: Omit<RetainerRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>): Promise<RetainerRecord>
   updateRetainer(id: string, data: Partial<RetainerRecord>): Promise<RetainerRecord>
 
   // Automation
   getAutomationRules(): Promise<AutomationRuleRecord[]>
   getAutomationRule(id: string): Promise<AutomationRuleRecord | null>
-  createAutomationRule(data: Omit<AutomationRuleRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<AutomationRuleRecord>
+  createAutomationRule(data: Omit<AutomationRuleRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>): Promise<AutomationRuleRecord>
   updateAutomationRule(id: string, data: Partial<AutomationRuleRecord>): Promise<AutomationRuleRecord>
 
   // Reviews
   getReviews(): Promise<ReviewRecord[]>
-  createReview(data: Omit<ReviewRecord, 'id' | 'createdAt'>): Promise<ReviewRecord>
+  createReview(data: Omit<ReviewRecord, 'id' | 'createdAt' | 'workspaceId'>): Promise<ReviewRecord>
   updateReview(id: string, data: Partial<ReviewRecord>): Promise<ReviewRecord>
 
   // Settings
@@ -92,6 +94,7 @@ export interface WorkspaceDatabase {
 
 export interface LeadRecord {
   id: string
+  workspaceId: string
   name: string
   email: string
   phone?: string
@@ -105,6 +108,7 @@ export interface LeadRecord {
 
 export interface ClientRecord {
   id: string
+  workspaceId: string
   company: string
   contacts: string
   notes?: string
@@ -116,6 +120,7 @@ export interface ClientRecord {
 
 export interface ProjectRecord {
   id: string
+  workspaceId: string
   clientId: string
   name: string
   status: 'Planning' | 'Active' | 'Paused' | 'Completed' | 'Archived'
@@ -128,6 +133,7 @@ export interface ProjectRecord {
 
 export interface AgreementRecord {
   id: string
+  workspaceId: string
   clientId: string
   type: 'Proposal' | 'Agreement' | 'NDA' | 'SOW' | 'Change' | 'Maintenance' | 'Retainer'
   status: 'Draft' | 'Sent' | 'Signed'
@@ -140,6 +146,7 @@ export interface AgreementRecord {
 
 export interface InvoiceRecord {
   id: string
+  workspaceId: string
   clientId: string
   lineItems: string
   subtotal: number
@@ -157,6 +164,7 @@ export interface InvoiceRecord {
 
 export interface TransactionRecord {
   id: string
+  workspaceId: string
   invoiceId: string
   clientId: string
   amount: number
@@ -169,6 +177,7 @@ export interface TransactionRecord {
 
 export interface ExpenseRecord {
   id: string
+  workspaceId: string
   category: string
   amount: number
   currency: string
@@ -180,6 +189,7 @@ export interface ExpenseRecord {
 
 export interface TaskRecord {
   id: string
+  workspaceId: string
   projectId: string
   title: string
   description?: string
@@ -193,6 +203,7 @@ export interface TaskRecord {
 
 export interface MeetingRecord {
   id: string
+  workspaceId: string
   projectId: string
   title: string
   date: string
@@ -206,6 +217,7 @@ export interface MeetingRecord {
 
 export interface FileRecord {
   id: string
+  workspaceId: string
   projectId: string
   name: string
   type: string
@@ -217,6 +229,7 @@ export interface FileRecord {
 
 export interface DocumentRecord {
   id: string
+  workspaceId: string
   projectId: string
   title: string
   content: string
@@ -227,6 +240,7 @@ export interface DocumentRecord {
 
 export interface RetainerRecord {
   id: string
+  workspaceId: string
   clientId: string
   name: string
   amount: number
@@ -242,6 +256,7 @@ export interface RetainerRecord {
 
 export interface AutomationRuleRecord {
   id: string
+  workspaceId: string
   name: string
   trigger: string
   action: string
@@ -253,6 +268,7 @@ export interface AutomationRuleRecord {
 
 export interface ReviewRecord {
   id: string
+  workspaceId: string
   clientId: string
   projectId: string
   rating: number
