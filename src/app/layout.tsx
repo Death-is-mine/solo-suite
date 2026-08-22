@@ -5,8 +5,11 @@ import { AppShell } from '@/components/layout/app-shell'
 import { SessionProvider } from 'next-auth/react'
 import { registerListeners } from '@/lib/event-bus/listeners'
 import '@/lib/automation'
+import '@/lib/workflow-engine'
+import { initPlugins } from '@/lib/plugin-sdk'
 
 registerListeners()
+initPlugins()
 
 const inter = Inter({
   variable: '--font-inter',
