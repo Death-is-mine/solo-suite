@@ -1,5 +1,6 @@
 import type { WorkspaceDatabase, LeadRecord, ClientRecord, ProjectRecord, AgreementRecord, InvoiceRecord, TransactionRecord, ExpenseRecord, TaskRecord, MeetingRecord, FileRecord, DocumentRecord, RetainerRecord, AutomationRuleRecord, ReviewRecord, JobRecord } from './types'
 import { generateId } from '@/lib/id'
+import { getContext } from '@/lib/workspace-context'
 
 // ponytail: in-memory implementation for development.
 // Swap to GoogleSheetsAdapter when SHEET_ID + service account are configured.
@@ -22,11 +23,20 @@ class InMemoryDatabase implements WorkspaceDatabase {
   private settings = new Map<string, string>()
   private jobs = new Map<string, JobRecord>()
 
-  async getLeads() { return Array.from(this.leads.values()) }
+  private getWorkspaceId(): string {
+    return getContext().workspaceId
+  }
+
+  private inWorkspace<T extends { workspaceId: string }>(items: T[]): T[] {
+    const wid = this.getWorkspaceId()
+    return items.filter((r) => r.workspaceId === wid)
+  }
+
+  async getLeads() { return this.inWorkspace(Array.from(this.leads.values())) }
   async getLead(id: string) { return this.leads.get(id) ?? null }
-  async createLead(data: Omit<LeadRecord, 'id' | 'createdAt' | 'updatedAt'>) {
+  async createLead(data: Omit<LeadRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>) {
     const now = new Date().toISOString()
-    const record: LeadRecord = { id: generateId('LD'), ...data, createdAt: now, updatedAt: now }
+    const record: LeadRecord = { id: generateId('LD'), workspaceId: this.getWorkspaceId(), ...data, createdAt: now, updatedAt: now }
     this.leads.set(record.id, record)
     return record
   }
@@ -38,11 +48,11 @@ class InMemoryDatabase implements WorkspaceDatabase {
     return updated
   }
 
-  async getClients() { return Array.from(this.clients.values()) }
+  async getClients() { return this.inWorkspace(Array.from(this.clients.values())) }
   async getClient(id: string) { return this.clients.get(id) ?? null }
-  async createClient(data: Omit<ClientRecord, 'id' | 'createdAt' | 'updatedAt'>) {
+  async createClient(data: Omit<ClientRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>) {
     const now = new Date().toISOString()
-    const record: ClientRecord = { id: generateId('CL'), ...data, portalAccess: data.portalAccess ?? false, createdAt: now, updatedAt: now }
+    const record: ClientRecord = { id: generateId('CL'), workspaceId: this.getWorkspaceId(), ...data, portalAccess: data.portalAccess ?? false, createdAt: now, updatedAt: now }
     this.clients.set(record.id, record)
     return record
   }
@@ -54,11 +64,11 @@ class InMemoryDatabase implements WorkspaceDatabase {
     return updated
   }
 
-  async getProjects() { return Array.from(this.projects.values()) }
+  async getProjects() { return this.inWorkspace(Array.from(this.projects.values())) }
   async getProject(id: string) { return this.projects.get(id) ?? null }
-  async createProject(data: Omit<ProjectRecord, 'id' | 'createdAt' | 'updatedAt'>) {
+  async createProject(data: Omit<ProjectRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>) {
     const now = new Date().toISOString()
-    const record: ProjectRecord = { id: generateId('PR'), ...data, createdAt: now, updatedAt: now }
+    const record: ProjectRecord = { id: generateId('PR'), workspaceId: this.getWorkspaceId(), ...data, createdAt: now, updatedAt: now }
     this.projects.set(record.id, record)
     return record
   }
@@ -70,11 +80,11 @@ class InMemoryDatabase implements WorkspaceDatabase {
     return updated
   }
 
-  async getAgreements() { return Array.from(this.agreements.values()) }
+  async getAgreements() { return this.inWorkspace(Array.from(this.agreements.values())) }
   async getAgreement(id: string) { return this.agreements.get(id) ?? null }
-  async createAgreement(data: Omit<AgreementRecord, 'id' | 'createdAt' | 'updatedAt'>) {
+  async createAgreement(data: Omit<AgreementRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>) {
     const now = new Date().toISOString()
-    const record: AgreementRecord = { id: generateId('AG'), ...data, createdAt: now, updatedAt: now }
+    const record: AgreementRecord = { id: generateId('AG'), workspaceId: this.getWorkspaceId(), ...data, createdAt: now, updatedAt: now }
     this.agreements.set(record.id, record)
     return record
   }
@@ -86,11 +96,11 @@ class InMemoryDatabase implements WorkspaceDatabase {
     return updated
   }
 
-  async getInvoices() { return Array.from(this.invoices.values()) }
+  async getInvoices() { return this.inWorkspace(Array.from(this.invoices.values())) }
   async getInvoice(id: string) { return this.invoices.get(id) ?? null }
-  async createInvoice(data: Omit<InvoiceRecord, 'id' | 'createdAt' | 'updatedAt'>) {
+  async createInvoice(data: Omit<InvoiceRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>) {
     const now = new Date().toISOString()
-    const record: InvoiceRecord = { id: generateId('INV'), ...data, createdAt: now, updatedAt: now }
+    const record: InvoiceRecord = { id: generateId('INV'), workspaceId: this.getWorkspaceId(), ...data, createdAt: now, updatedAt: now }
     this.invoices.set(record.id, record)
     return record
   }
@@ -102,29 +112,30 @@ class InMemoryDatabase implements WorkspaceDatabase {
     return updated
   }
 
-  async getTransactions() { return Array.from(this.transactions.values()) }
-  async createTransaction(data: Omit<TransactionRecord, 'id' | 'createdAt'>) {
+  async getTransactions() { return this.inWorkspace(Array.from(this.transactions.values())) }
+  async createTransaction(data: Omit<TransactionRecord, 'id' | 'createdAt' | 'workspaceId'>) {
     const now = new Date().toISOString()
-    const record: TransactionRecord = { id: generateId('TR'), ...data, createdAt: now }
+    const record: TransactionRecord = { id: generateId('TR'), workspaceId: this.getWorkspaceId(), ...data, createdAt: now }
     this.transactions.set(record.id, record)
     return record
   }
-  async getExpenses() { return Array.from(this.expenses.values()) }
-  async createExpense(data: Omit<ExpenseRecord, 'id' | 'createdAt'>) {
+
+  async getExpenses() { return this.inWorkspace(Array.from(this.expenses.values())) }
+  async createExpense(data: Omit<ExpenseRecord, 'id' | 'createdAt' | 'workspaceId'>) {
     const now = new Date().toISOString()
-    const record: ExpenseRecord = { id: generateId('EX'), ...data, createdAt: now }
+    const record: ExpenseRecord = { id: generateId('EX'), workspaceId: this.getWorkspaceId(), ...data, createdAt: now }
     this.expenses.set(record.id, record)
     return record
   }
 
   async getTasks(projectId?: string) {
-    const all = Array.from(this.tasks.values())
+    const all = this.inWorkspace(Array.from(this.tasks.values()))
     return projectId ? all.filter((t) => t.projectId === projectId) : all
   }
   async getTask(id: string) { return this.tasks.get(id) ?? null }
-  async createTask(data: Omit<TaskRecord, 'id' | 'createdAt' | 'updatedAt'>) {
+  async createTask(data: Omit<TaskRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>) {
     const now = new Date().toISOString()
-    const record: TaskRecord = { id: generateId('TK'), ...data, createdAt: now, updatedAt: now }
+    const record: TaskRecord = { id: generateId('TK'), workspaceId: this.getWorkspaceId(), ...data, createdAt: now, updatedAt: now }
     this.tasks.set(record.id, record)
     return record
   }
@@ -137,13 +148,13 @@ class InMemoryDatabase implements WorkspaceDatabase {
   }
 
   async getMeetings(projectId?: string) {
-    const all = Array.from(this.meetings.values())
+    const all = this.inWorkspace(Array.from(this.meetings.values()))
     return projectId ? all.filter((m) => m.projectId === projectId) : all
   }
   async getMeeting(id: string) { return this.meetings.get(id) ?? null }
-  async createMeeting(data: Omit<MeetingRecord, 'id' | 'createdAt' | 'updatedAt'>) {
+  async createMeeting(data: Omit<MeetingRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>) {
     const now = new Date().toISOString()
-    const record: MeetingRecord = { id: generateId('MT'), ...data, createdAt: now, updatedAt: now }
+    const record: MeetingRecord = { id: generateId('MT'), workspaceId: this.getWorkspaceId(), ...data, createdAt: now, updatedAt: now }
     this.meetings.set(record.id, record)
     return record
   }
@@ -156,26 +167,26 @@ class InMemoryDatabase implements WorkspaceDatabase {
   }
 
   async getFiles(projectId?: string) {
-    const all = Array.from(this.files.values())
+    const all = this.inWorkspace(Array.from(this.files.values()))
     return projectId ? all.filter((f) => f.projectId === projectId) : all
   }
   async getFile(id: string) { return this.files.get(id) ?? null }
-  async createFile(data: Omit<FileRecord, 'id' | 'createdAt'>) {
+  async createFile(data: Omit<FileRecord, 'id' | 'createdAt' | 'workspaceId'>) {
     const now = new Date().toISOString()
-    const record: FileRecord = { id: generateId('DC'), ...data, createdAt: now }
+    const record: FileRecord = { id: generateId('FL'), workspaceId: this.getWorkspaceId(), ...data, createdAt: now }
     this.files.set(record.id, record)
     return record
   }
   async deleteFile(id: string) { this.files.delete(id) }
 
   async getDocuments(projectId?: string) {
-    const all = Array.from(this.documents.values())
+    const all = this.inWorkspace(Array.from(this.documents.values()))
     return projectId ? all.filter((d) => d.projectId === projectId) : all
   }
   async getDocument(id: string) { return this.documents.get(id) ?? null }
-  async createDocument(data: Omit<DocumentRecord, 'id' | 'createdAt' | 'updatedAt'>) {
+  async createDocument(data: Omit<DocumentRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>) {
     const now = new Date().toISOString()
-    const record: DocumentRecord = { id: generateId('DC'), ...data, createdAt: now, updatedAt: now }
+    const record: DocumentRecord = { id: generateId('DC'), workspaceId: this.getWorkspaceId(), ...data, createdAt: now, updatedAt: now }
     this.documents.set(record.id, record)
     return record
   }
@@ -187,11 +198,11 @@ class InMemoryDatabase implements WorkspaceDatabase {
     return updated
   }
 
-  async getRetainers() { return Array.from(this.retainers.values()) }
+  async getRetainers() { return this.inWorkspace(Array.from(this.retainers.values())) }
   async getRetainer(id: string) { return this.retainers.get(id) ?? null }
-  async createRetainer(data: Omit<RetainerRecord, 'id' | 'createdAt' | 'updatedAt'>) {
+  async createRetainer(data: Omit<RetainerRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>) {
     const now = new Date().toISOString()
-    const record: RetainerRecord = { id: generateId('RT'), ...data, createdAt: now, updatedAt: now }
+    const record: RetainerRecord = { id: generateId('RT'), workspaceId: this.getWorkspaceId(), ...data, createdAt: now, updatedAt: now }
     this.retainers.set(record.id, record)
     return record
   }
@@ -203,11 +214,11 @@ class InMemoryDatabase implements WorkspaceDatabase {
     return updated
   }
 
-  async getAutomationRules() { return Array.from(this.automations.values()) }
+  async getAutomationRules() { return this.inWorkspace(Array.from(this.automations.values())) }
   async getAutomationRule(id: string) { return this.automations.get(id) ?? null }
-  async createAutomationRule(data: Omit<AutomationRuleRecord, 'id' | 'createdAt' | 'updatedAt'>) {
+  async createAutomationRule(data: Omit<AutomationRuleRecord, 'id' | 'createdAt' | 'updatedAt' | 'workspaceId'>) {
     const now = new Date().toISOString()
-    const record: AutomationRuleRecord = { id: generateId('AU'), ...data, createdAt: now, updatedAt: now }
+    const record: AutomationRuleRecord = { id: generateId('AU'), workspaceId: this.getWorkspaceId(), ...data, createdAt: now, updatedAt: now }
     this.automations.set(record.id, record)
     return record
   }
@@ -219,10 +230,10 @@ class InMemoryDatabase implements WorkspaceDatabase {
     return updated
   }
 
-  async getReviews() { return Array.from(this.reviews.values()) }
-  async createReview(data: Omit<ReviewRecord, 'id' | 'createdAt'>) {
+  async getReviews() { return this.inWorkspace(Array.from(this.reviews.values())) }
+  async createReview(data: Omit<ReviewRecord, 'id' | 'createdAt' | 'workspaceId'>) {
     const now = new Date().toISOString()
-    const record: ReviewRecord = { id: generateId('RV'), ...data, createdAt: now }
+    const record: ReviewRecord = { id: generateId('RV'), workspaceId: this.getWorkspaceId(), ...data, createdAt: now }
     this.reviews.set(record.id, record)
     return record
   }
