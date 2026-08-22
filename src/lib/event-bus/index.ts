@@ -45,7 +45,8 @@ export async function emit(eventType: EventType, data: Record<string, unknown>, 
   const event: EventPayload = { type: eventType, data, timestamp: new Date().toISOString(), source }
   const deps = handlers.get(eventType)
   if (!deps) return
-  await Promise.all(Array.from(deps).map((h) => h(event)))
+  // ponytail: catch per-handler so one failure doesn't block others
+  await Promise.allSettled(Array.from(deps).map((h) => h(event)))
 }
 
 export function isBusinessEvent(type: EventType): type is BusinessEventType {

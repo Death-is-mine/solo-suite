@@ -4,6 +4,7 @@ import './globals.css'
 import { AppShell } from '@/components/layout/app-shell'
 import { SessionProvider } from 'next-auth/react'
 import { registerListeners } from '@/lib/event-bus/listeners'
+import '@/lib/automation'
 
 registerListeners()
 
