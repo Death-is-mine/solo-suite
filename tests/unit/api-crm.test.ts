@@ -1,6 +1,22 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { withContext } from '@/lib/workspace-context'
 import { db } from '@/lib/database'
+
+vi.mock('@/lib/auth/config', () => ({
+  auth: vi.fn().mockResolvedValue({
+    user: {
+      id: 'test-user',
+      name: 'Test User',
+      email: 'test@test.com',
+      role: 'owner',
+      workspaceId: 'ws-test',
+    },
+  }),
+  handlers: {},
+  signIn: vi.fn(),
+  signOut: vi.fn(),
+}))
+
 import { GET as getLeads, POST as postLead, PUT as putLead } from '@/app/api/leads/route'
 import { GET as getClients, POST as postClient, PUT as putClient } from '@/app/api/clients/route'
 
