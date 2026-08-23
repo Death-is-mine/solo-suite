@@ -1,27 +1,47 @@
 import { describe, it, expect } from 'vitest'
-import { getContext, setContext, withContext } from '@/lib/workspace-context'
+import { getContext, withContext, hasContext } from '@/lib/workspace-context'
 
 describe('Workspace Context', () => {
-  it('should return default context', () => {
-    const ctx = getContext()
-    expect(ctx.workspaceId).toBe('default')
-    expect(ctx.role).toBe('owner')
-    expect(ctx.currency).toBe('USD')
+  it('should throw when no context exists', () => {
+    expect(() => getContext()).toThrow('No workspace context')
   })
 
-  it('should update context partially', () => {
-    setContext({ currency: 'EUR', locale: 'de-DE' })
-    const ctx = getContext()
-    expect(ctx.currency).toBe('EUR')
-    expect(ctx.locale).toBe('de-DE')
-    expect(ctx.workspaceId).toBe('default')
+  it('should return false for hasContext outside withContext', () => {
+    expect(hasContext()).toBe(false)
   })
 
-  it('should restore previous context after withContext', async () => {
-    setContext({ userId: 'user-1' })
-    await withContext({ userId: 'user-2' }, async () => {
-      expect(getContext().userId).toBe('user-2')
+  it('should provide context inside withContext', async () => {
+    await withContext({ userId: 'user-1', workspaceId: 'ws-1', role: 'owner' }, async () => {
+      const ctx = getContext()
+      expect(ctx.userId).toBe('user-1')
+      expect(ctx.workspaceId).toBe('ws-1')
+      expect(ctx.role).toBe('owner')
+      expect(hasContext()).toBe(true)
     })
-    expect(getContext().userId).toBe('user-1')
+  })
+
+  it('should restore context after nested withContext', async () => {
+    await withContext({ userId: 'outer', workspaceId: 'ws-1', role: 'owner' }, async () => {
+      expect(getContext().userId).toBe('outer')
+      await withContext({ userId: 'inner' }, async () => {
+        expect(getContext().userId).toBe('inner')
+      })
+      expect(getContext().userId).toBe('outer')
+    })
+  })
+
+  it('should isolate concurrent contexts', async () => {
+    const results: string[] = []
+    const p1 = withContext({ userId: 'a', workspaceId: 'ws-a', role: 'owner' }, async () => {
+      await new Promise((r) => setTimeout(r, 10))
+      results.push(`a:${getContext().workspaceId}`)
+    })
+    const p2 = withContext({ userId: 'b', workspaceId: 'ws-b', role: 'admin' }, async () => {
+      await new Promise((r) => setTimeout(r, 5))
+      results.push(`b:${getContext().workspaceId}`)
+    })
+    await Promise.all([p1, p2])
+    expect(results).toContain('a:ws-a')
+    expect(results).toContain('b:ws-b')
   })
 })
