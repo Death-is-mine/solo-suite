@@ -1,4 +1,4 @@
-// ponytail: simple context object, expand as modules are built
+import { AsyncLocalStorage } from 'node:async_hooks'
 
 export interface WorkspaceContext {
   userId: string
@@ -11,25 +11,33 @@ export interface WorkspaceContext {
   currentClientId?: string
 }
 
-let context: WorkspaceContext = {
-  userId: '',
-  workspaceId: 'default',
-  role: 'owner',
-  locale: 'en-US',
-  timezone: 'UTC',
-  currency: 'USD',
-}
+const storage = new AsyncLocalStorage<WorkspaceContext>()
 
 export function getContext(): WorkspaceContext {
-  return context
+  const ctx = storage.getStore()
+  if (!ctx) throw new Error('No workspace context — must be called within withContext()')
+  return ctx
 }
 
 export function setContext(partial: Partial<WorkspaceContext>) {
-  context = { ...context, ...partial }
+  const current = storage.getStore()
+  if (!current) throw new Error('Cannot setContext outside withContext()')
+  storage.enterWith({ ...current, ...partial })
 }
 
 export function withContext<T>(partial: Partial<WorkspaceContext>, fn: () => Promise<T>): Promise<T> {
-  const prev = context
-  context = { ...context, ...partial }
-  return fn().finally(() => { context = prev })
+  const current = storage.getStore()
+  const base: WorkspaceContext = current ?? {
+    userId: '',
+    workspaceId: '',
+    role: 'owner',
+    locale: 'en-US',
+    timezone: 'UTC',
+    currency: 'USD',
+  }
+  return storage.run({ ...base, ...partial }, fn)
+}
+
+export function hasContext(): boolean {
+  return storage.getStore() !== undefined
 }
