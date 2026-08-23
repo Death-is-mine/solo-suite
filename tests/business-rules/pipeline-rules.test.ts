@@ -1,38 +1,45 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { db } from '@/lib/database'
+import { withContext } from '@/lib/workspace-context'
+
+const ctx = { userId: 'test', workspaceId: 'ws-test', role: 'owner' as const, locale: 'en-US', timezone: 'UTC', currency: 'USD' }
 
 describe('Pipeline Business Rules', () => {
   beforeEach(async () => { await db.reset() })
   it('should not allow stage skip from New to Won (enforced at UI level)', async () => {
-    // ponytail: stage transitions are enforced in the UI, not the data layer
-    // The data layer allows any transition; the UI restricts to sequential + Won/Lost
-    const lead = await db.createLead({ name: 'Test', email: 't@t.com', stage: 'New' })
-    await db.updateLead(lead.id, { stage: 'Won' })
-    expect((await db.getLead(lead.id))?.stage).toBe('Won')
+    await withContext(ctx, async () => {
+      const lead = await db.createLead({ name: 'Test', email: 't@t.com', stage: 'New' })
+      await db.updateLead(lead.id, { stage: 'Won' })
+      expect((await db.getLead(lead.id))?.stage).toBe('Won')
+    })
   })
 
   it('should track conversion rate from leads', async () => {
-    await db.createLead({ name: 'A', email: 'a@a.com', stage: 'Won' })
-    await db.createLead({ name: 'B', email: 'b@b.com', stage: 'Lost' })
-    await db.createLead({ name: 'C', email: 'c@c.com', stage: 'New' })
+    await withContext(ctx, async () => {
+      await db.createLead({ name: 'A', email: 'a@a.com', stage: 'Won' })
+      await db.createLead({ name: 'B', email: 'b@b.com', stage: 'Lost' })
+      await db.createLead({ name: 'C', email: 'c@c.com', stage: 'New' })
 
-    const leads = await db.getLeads()
-    const won = leads.filter((l) => l.stage === 'Won').length
-    const rate = leads.length > 0 ? Math.round((won / leads.length) * 100) : 0
-    expect(rate).toBe(33)
+      const leads = await db.getLeads()
+      const won = leads.filter((l) => l.stage === 'Won').length
+      const rate = leads.length > 0 ? Math.round((won / leads.length) * 100) : 0
+      expect(rate).toBe(33)
+    })
   })
 })
 
 describe('Invoice Business Rules', () => {
   it('should track invoice lifecycle Draft → Sent → Paid', async () => {
-    const c = await db.createClient({ company: 'C', contacts: '[]', portalAccess: false })
-    const inv = await db.createInvoice({ clientId: c.id, lineItems: '[]', subtotal: 500, tax: 0, taxType: 'None', total: 500, currency: 'USD', status: 'Draft' })
+    await withContext(ctx, async () => {
+      const c = await db.createClient({ company: 'C', contacts: '[]', portalAccess: false })
+      const inv = await db.createInvoice({ clientId: c.id, lineItems: '[]', subtotal: 500, tax: 0, taxType: 'None', total: 500, currency: 'USD', status: 'Draft' })
 
-    await db.updateInvoice(inv.id, { status: 'Sent' })
-    expect((await db.getInvoice(inv.id))?.status).toBe('Sent')
+      await db.updateInvoice(inv.id, { status: 'Sent' })
+      expect((await db.getInvoice(inv.id))?.status).toBe('Sent')
 
-    await db.updateInvoice(inv.id, { status: 'Paid', paidAt: new Date().toISOString() })
-    expect((await db.getInvoice(inv.id))?.status).toBe('Paid')
+      await db.updateInvoice(inv.id, { status: 'Paid', paidAt: new Date().toISOString() })
+      expect((await db.getInvoice(inv.id))?.status).toBe('Paid')
+    })
   })
 })
 
