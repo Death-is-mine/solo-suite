@@ -32,15 +32,18 @@ src/
 │   ├── database/           # In-memory DB + Google Sheets adapter
 │   ├── api/                # Zod validation schemas + helpers
 │   ├── auth/               # NextAuth.js config (Google OAuth)
+│   ├── authorization/      # Role-based permissions
 │   ├── storage/            # File storage adapters (local, Google Drive)
-│   ├── event-bus/          # Pub/sub event system
-│   ├── job-queue/          # In-process background jobs
+│   ├── event-bus/          # Typed pub/sub event system
+│   ├── job-queue/          # In-process background jobs with retry
+│   ├── workflow-engine/    # Event-driven automation rules
+│   ├── mcp/                # Model Context Protocol (external tools)
+│   ├── mail/               # Email adapter (Gmail stub)
 │   ├── workspace-context/  # AsyncLocalStorage for request scoping
 │   ├── feature-flags/      # Feature flag definitions
 │   ├── id/                 # ID generator (PREFIX-YYYY-NNNN)
 │   ├── settings/           # Settings cache
 │   ├── calendar/           # Calendar adapter interface
-│   ├── mail/               # Mail adapter interface
 │   ├── documents/          # Document adapter interface
 │   ├── navigation.ts       # Sidebar navigation structure
 │   ├── fetch-helper.ts     # Typed fetch wrappers (apiGet, apiPost, apiPut)
@@ -61,11 +64,12 @@ src/
 ### 1. Data Flow
 
 ```
-Page Component → useFetch/useCrud hook → /api/* route → Zod validation → Database → Response
+Page Component → useFetch/useCrud hook → /api/* route → withAuth → Zod validation → Database → Response
 ```
 
 - **Pages** are `'use client'` components that use hooks for data fetching
 - **API routes** validate input with Zod before touching the database
+- **All routes** are protected by `withAuth()` which sets workspace context
 - **Database** is an in-memory Map (dev) or Google Sheets (production)
 
 ### 2. Component Hierarchy
@@ -152,12 +156,62 @@ All records auto-generate IDs with the pattern `PREFIX-YYYY-NNNN` (e.g., `LD-202
 
 See `src/lib/database/types.ts` for the full schema.
 
-## Authentication
+## Authentication & Authorization
 
 - **Provider**: Google OAuth via NextAuth.js v5
 - **Config**: `src/lib/auth/config.ts`
 - **Guard**: `src/proxy.ts` — protects all routes except `/login` and `/api/auth`
 - **Session**: Available via `useSession()` (client) or `auth()` (server)
+- **Authorization**: Role-based (owner, admin, member, client) via `src/lib/authorization/index.ts`
+- **Workspace context**: Every request is scoped to a workspace via `AsyncLocalStorage` (`src/lib/workspace-context/index.ts`)
+- **API auth**: All API routes use `withAuth()` wrapper from `src/lib/api/with-auth.ts`
+
+### Permissions
+
+Roles map to permissions defined in `src/lib/authorization/index.ts`:
+
+| Role | Permissions |
+|------|-------------|
+| Owner | All permissions |
+| Admin | All permissions except workspace.destruct |
+| Member | Read + limited write (leads, clients, projects, tasks, meetings, documents) |
+| Client | Read-only for portal-accessible resources |
+
+## MCP (Model Context Protocol)
+
+External tool interface at `POST /api/mcp` (JSON-RPC). Tools require permissions and emit audit logs.
+
+```ts
+// Registered tools: search_crm, create_task, update_status, create_invoice,
+// send_email, list_calendar, manage_contract, get_client_portal,
+// analyze_financials, generate_report, create_lead, send_proposal
+```
+
+Tools are defined in `src/lib/mcp/tools.ts` and registered via `src/lib/mcp/index.ts`.
+
+## Workflow Engine
+
+Event-driven automation rules (`src/lib/workflow-engine/index.ts`):
+
+```ts
+// Rules: trigger (event pattern) → condition (optional) → action
+// Executions are persisted as WorkflowExecutionRecord
+// Actions: create_task, update_status, send_notification
+```
+
+Rules stored in database as `AutomationRuleRecord`. Workflow engine listens to event bus and executes matching rules.
+
+## Client Portal
+
+Two endpoints for external client access:
+- `POST /api/portal/login` — validates email + clientId, returns scoped client data
+- Portal pages use app's existing auth, scoped by clientId
+
+## Email Integration
+
+- **Outbound**: `src/lib/mail/gmail.ts` — Gmail adapter (requires `GMAIL_API_KEY` env var)
+- **Inbound**: `POST /api/webhooks/email` — receives inbound emails, matches to clients or creates leads
+- **Event listeners**: `src/lib/event-bus/listeners.ts` — sends emails on `lead.created` and `agreement.sent`
 
 ## Feature Flags
 
@@ -175,7 +229,7 @@ Defined in `src/lib/feature-flags/index.ts`:
 
 ## Event System
 
-Pub/sub bus for decoupled side effects:
+Typed pub/sub bus for decoupled side effects. Events flow through `src/lib/event-bus/index.ts`.
 
 ```ts
 import { on, emit } from '@/lib'
@@ -187,11 +241,15 @@ on('lead.created', (event) => {
 await emit('lead.created', { name: 'Acme Corp' }, 'leads-page')
 ```
 
-Events: `lead.created`, `lead.converted`, `client.created`, `agreement.sent`, `agreement.signed`, `invoice.sent`, `invoice.paid`, `expense.recorded`, `project.completed`, `job.failed`.
+**Business events**: `lead.created`, `lead.converted`, `lead.lost`, `client.created`, `agreement.sent`, `agreement.signed`, `invoice.sent`, `invoice.paid`, `expense.recorded`, `project.created`, `project.completed`, `review.submitted`
+
+**System events**: `system.backup`, `system.export`
+
+Event payloads are typed via `EventPayloadMap` in `src/lib/event-bus/types.ts`. Listeners in `src/lib/event-bus/listeners.ts` trigger side effects (e.g., email on `lead.created`).
 
 ## Job Queue
 
-In-process background job processing:
+In-process background job processing with retry/backoff (`src/lib/job-queue/index.ts`):
 
 ```ts
 import { enqueue, registerJobHandler } from '@/lib'
@@ -203,7 +261,7 @@ registerJobHandler('send-email', async (payload) => {
 await enqueue('send-email', { to: 'client@example.com', subject: 'Invoice' })
 ```
 
-Jobs persist in the database but are lost on server restart. Replace with Redis/BullMQ for production reliability.
+Max 3 retries with exponential backoff. Jobs persist in the database but are lost on server restart. Replace with Redis/BullMQ for production reliability.
 
 ## Deployment
 
@@ -230,7 +288,7 @@ npm run dev          # Start dev server (Turbopack)
 npm run build        # Production build
 npm run start        # Start production server
 npm run lint         # ESLint
-npm test             # Vitest unit tests
+npm test             # Vitest unit tests (60 tests)
 npx playwright test  # Playwright E2E tests
 ```
 
