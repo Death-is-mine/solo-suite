@@ -1,9 +1,8 @@
 import { on, emit, type EventType, type EventPayload } from '@/lib/event-bus'
 import { db } from '@/lib/database'
+import { validateWebhookUrl } from '@/lib/webhook-validation'
 
 // ponytail: lightweight workflow engine — trigger/condition/action over business events.
-// No visual builder yet — rules are defined in code or via API.
-// Supports: condition matching, action chaining, rate limiting per rule.
 
 export interface WorkflowTrigger {
   event: EventType
@@ -88,6 +87,11 @@ async function executeAction(action: WorkflowAction, event: EventPayload) {
       const { url, method, headers } = action.config as {
         url: string; method?: string; headers?: Record<string, string>
       }
+      const check = validateWebhookUrl(url)
+      if (!check.valid) {
+        console.error(`[workflow] webhook blocked: ${check.reason} — url: ${url}`)
+        break
+      }
       await fetch(url, {
         method: method ?? 'POST',
         headers: { 'Content-Type': 'application/json', ...headers },
@@ -98,7 +102,6 @@ async function executeAction(action: WorkflowAction, event: EventPayload) {
   }
 }
 
-// ponytail: store rules in-memory for fast evaluation, synced from DB on load
 let cachedRules: WorkflowRule[] = []
 
 export async function loadRules() {
@@ -135,7 +138,6 @@ export async function evaluateWorkflow(event: EventPayload) {
   }
 }
 
-// wire to all business events
 const businessEvents: EventType[] = [
   'lead.created', 'lead.converted', 'client.created',
   'agreement.sent', 'agreement.signed',
