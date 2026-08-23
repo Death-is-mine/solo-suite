@@ -1,35 +1,61 @@
 import { on } from './index'
+import { gmailAdapter } from '@/lib/mail/gmail'
 
-// ponytail: console-only, replace with real side-effects (email, push, webhook) when needed
+let registered = false
+
+// ponytail: event listeners with real email side-effects.
+// Mail adapter is a stub unless GMAIL_API_KEY is set — emails silently fail in dev.
 export function registerListeners() {
-  on('lead.created', (payload) => {
-    console.log('[event] lead.created', payload.data.name)
+  if (registered) return
+  registered = true
+
+  on('lead.created', (event) => {
+    console.log('[event] lead.created', event.data.name)
+    gmailAdapter.sendEmail(
+      event.data.email as string,
+      'New lead received',
+      `<p>A new lead <strong>${event.data.name}</strong> has been added to your pipeline.</p>`,
+    ).catch(() => {})
   })
-  on('lead.converted', (payload) => {
-    console.log('[event] lead.converted', payload.data.name)
+
+  on('lead.converted', (event) => {
+    console.log('[event] lead.converted', event.data.leadId)
   })
-  on('client.created', (payload) => {
-    console.log('[event] client.created', payload.data.name)
+
+  on('client.created', (event) => {
+    console.log('[event] client.created', event.data.clientId)
   })
-  on('agreement.sent', (payload) => {
-    console.log('[event] agreement.sent', payload.data.id)
+
+  on('agreement.sent', (event) => {
+    console.log('[event] agreement.sent', event.data.agreementId)
+    gmailAdapter.sendEmail(
+      event.data.clientId as string,
+      'Proposal sent',
+      `<p>A proposal has been sent. Agreement ID: ${event.data.agreementId}</p>`,
+    ).catch(() => {})
   })
-  on('agreement.signed', (payload) => {
-    console.log('[event] agreement.signed', payload.data.id)
+
+  on('agreement.signed', (event) => {
+    console.log('[event] agreement.signed', event.data.agreementId)
   })
-  on('invoice.sent', (payload) => {
-    console.log('[event] invoice.sent', payload.data.id)
+
+  on('invoice.sent', (event) => {
+    console.log('[event] invoice.sent', event.data.invoiceId)
   })
-  on('invoice.paid', (payload) => {
-    console.log('[event] invoice.paid', payload.data.id)
+
+  on('invoice.paid', (event) => {
+    console.log('[event] invoice.paid', event.data.invoiceId, event.data.amount)
   })
-  on('expense.recorded', (payload) => {
-    console.log('[event] expense.recorded', payload.data.amount)
+
+  on('expense.recorded', (event) => {
+    console.log('[event] expense.recorded', event.data.amount)
   })
-  on('project.completed', (payload) => {
-    console.log('[event] project.completed', payload.data.name)
+
+  on('project.completed', (event) => {
+    console.log('[event] project.completed', event.data.projectId)
   })
-  on('job.failed', (payload) => {
-    console.error('[event] job.failed', payload.data.jobId, payload.data.error)
+
+  on('job.failed', (event) => {
+    console.error('[event] job.failed', event.data.jobId, event.data.error)
   })
 }

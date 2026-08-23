@@ -7,7 +7,7 @@ export type Permission =
   | 'leads.read' | 'leads.create' | 'leads.update' | 'leads.delete' | 'leads.convert'
   | 'clients.read' | 'clients.create' | 'clients.update' | 'clients.delete'
   | 'projects.read' | 'projects.create' | 'projects.update' | 'projects.delete'
-  | 'agreements.read' | 'agreements.create' | 'agreements.update' | 'agreements.delete'
+  | 'agreements.read' | 'agreements.create' | 'agreements.update' | 'agreements.delete' | 'agreements.send'
   | 'invoices.read' | 'invoices.create' | 'invoices.update' | 'invoices.send' | 'invoices.markPaid'
   | 'transactions.read' | 'transactions.create'
   | 'expenses.read' | 'expenses.create'
@@ -25,12 +25,13 @@ export type Permission =
 
 type Role = WorkspaceContext['role']
 
+// ponytail: conservative default — owner/admin have most permissions, member is limited, client is read-only
 const rolePermissions: Record<Role, Set<Permission>> = {
   owner: new Set<Permission>([
     'leads.read', 'leads.create', 'leads.update', 'leads.delete', 'leads.convert',
     'clients.read', 'clients.create', 'clients.update', 'clients.delete',
     'projects.read', 'projects.create', 'projects.update', 'projects.delete',
-    'agreements.read', 'agreements.create', 'agreements.update', 'agreements.delete',
+    'agreements.read', 'agreements.create', 'agreements.update', 'agreements.delete', 'agreements.send',
     'invoices.read', 'invoices.create', 'invoices.update', 'invoices.send', 'invoices.markPaid',
     'transactions.read', 'transactions.create',
     'expenses.read', 'expenses.create',
@@ -43,14 +44,14 @@ const rolePermissions: Record<Role, Set<Permission>> = {
     'reviews.read', 'reviews.create', 'reviews.update',
     'settings.read', 'settings.write',
     'mcp.connect', 'mcp.read', 'mcp.execute',
-    'workflow.read', 'workflow.create', 'workflow.update', 'workflow.execute', 'workflow.delete',
+    'workflow.create', 'workflow.update', 'workflow.execute', 'workflow.delete',
     'backup.create', 'backup.restore',
   ]),
   admin: new Set<Permission>([
     'leads.read', 'leads.create', 'leads.update', 'leads.delete', 'leads.convert',
     'clients.read', 'clients.create', 'clients.update', 'clients.delete',
     'projects.read', 'projects.create', 'projects.update', 'projects.delete',
-    'agreements.read', 'agreements.create', 'agreements.update', 'agreements.delete',
+    'agreements.read', 'agreements.create', 'agreements.update', 'agreements.delete', 'agreements.send',
     'invoices.read', 'invoices.create', 'invoices.update', 'invoices.send', 'invoices.markPaid',
     'transactions.read', 'transactions.create',
     'expenses.read', 'expenses.create',
@@ -63,7 +64,7 @@ const rolePermissions: Record<Role, Set<Permission>> = {
     'reviews.read', 'reviews.create', 'reviews.update',
     'settings.read', 'settings.write',
     'mcp.connect', 'mcp.read', 'mcp.execute',
-    'workflow.read', 'workflow.create', 'workflow.update', 'workflow.execute', 'workflow.delete',
+    'workflow.create', 'workflow.update', 'workflow.execute', 'workflow.delete',
     'backup.create',
   ]),
   member: new Set<Permission>([
