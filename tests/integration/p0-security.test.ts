@@ -35,7 +35,7 @@ describe('P0.2: Cross-workspace data isolation', () => {
     await withContext({ userId: 'a', workspaceId: 'ws-a', role: 'owner' }, async () => {
       const lead = await db.createLead({ name: 'A-Lead', email: 'a@test.com', stage: 'New' })
       const got = await db.getLead(lead.id)
-      expect(got.name).toBe('A-Lead')
+      expect(got?.name).toBe('A-Lead')
     })
   })
 

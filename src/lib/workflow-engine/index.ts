@@ -3,6 +3,8 @@ import { db } from '@/lib/database'
 import { validateWebhookUrl } from '@/lib/webhook-validation'
 
 // ponytail: lightweight workflow engine — trigger/condition/action over business events.
+// No visual builder yet — rules are defined in code or via API.
+// Supports: condition matching, action chaining, rate limiting per rule.
 
 export interface WorkflowTrigger {
   event: EventType
@@ -102,6 +104,7 @@ async function executeAction(action: WorkflowAction, event: EventPayload) {
   }
 }
 
+// ponytail: store rules in-memory for fast evaluation, synced from DB on load
 let cachedRules: WorkflowRule[] = []
 
 export async function loadRules() {
@@ -128,16 +131,37 @@ export async function evaluateWorkflow(event: EventPayload) {
     const conditionsMet = rule.conditions.every((c) => evaluateCondition(event.data, c))
     if (!conditionsMet) continue
 
+    const start = Date.now()
+    let status: 'success' | 'failed' = 'success'
+    let error: string | undefined
+
     for (const action of rule.actions) {
       try {
         await executeAction(action, event)
       } catch (err) {
+        status = 'failed'
+        error = err instanceof Error ? err.message : 'Unknown error'
         console.error(`[workflow] rule ${rule.id} action ${action.type} failed:`, err)
       }
+    }
+
+    // record execution for audit trail
+    try {
+      await db.createWorkflowExecution({
+        ruleId: rule.id,
+        ruleName: rule.name,
+        eventType: event.type,
+        status,
+        error,
+        duration_ms: Date.now() - start,
+      })
+    } catch {
+      // ponytail: don't let audit logging crash workflow execution
     }
   }
 }
 
+// wire to all business events
 const businessEvents: EventType[] = [
   'lead.created', 'lead.converted', 'client.created',
   'agreement.sent', 'agreement.signed',

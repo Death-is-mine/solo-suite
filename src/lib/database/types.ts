@@ -90,6 +90,10 @@ export interface WorkspaceDatabase {
 
   // Internal
   reset(): Promise<void>
+
+  // Workflow Executions
+  createWorkflowExecution(data: Omit<WorkflowExecutionRecord, 'id' | 'createdAt' | 'workspaceId'>): Promise<WorkflowExecutionRecord>
+  getWorkflowExecutions(ruleId?: string): Promise<WorkflowExecutionRecord[]>
 }
 
 export interface LeadRecord {
@@ -287,4 +291,16 @@ export interface JobRecord {
   retries: number
   createdAt: string
   completedAt?: string
+}
+
+export interface WorkflowExecutionRecord {
+  id: string
+  workspaceId: string
+  ruleId: string
+  ruleName: string
+  eventType: string
+  status: 'success' | 'failed' | 'skipped'
+  error?: string
+  duration_ms: number
+  createdAt: string
 }
